@@ -3,10 +3,20 @@ void doingFirstSmallRadiusTurn(){
   
   static int onCount = 0;
   
+  static int totalCount = 0;
+  ++totalCount;
+  
+  if(totalCount < 150){
+    BEEPER_ON(); 
+  }else{
+    BEEPER_OFF();
+  }
+  
   // TODO - heuristics to end it?
   if(left){
     ++onCount;
     if(onCount > 120){
+      totalCount = 0;
       error(3);
     }
     

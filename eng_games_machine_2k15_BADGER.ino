@@ -20,7 +20,20 @@ const int RIGHT_BAK = 4;
 #define MOVE_FWD(SIDE, amount) do {  \
   analogWrite(SIDE ## _FWD, amount); \
   digitalWrite(SIDE ## _BAK, LOW);   \
-} while(0)  
+} while(0)
+
+#define MOVE_BAK(SIDE, amount) do {          \
+  analogWrite(SIDE ## _FWD, 255 - (amount)); \
+  digitalWrite(SIDE ## _BAK, HIGH);          \
+} while(0)
+  
+#define BEEPER_ON() do{ \
+  analogWrite(11, 200); \
+} while(0)
+
+#define BEEPER_OFF() do{ \
+  analogWrite(11, 0); \
+} while(0)
 
 boolean left, right, tilt;
 void (*currentState)();
@@ -34,6 +47,7 @@ void waitingForSecondSmallRadiusTurn();
 void error(int code);
 
 void setup(){
+  BEEPER_ON();
   pinMode(LEFT_FWD, OUTPUT);
   pinMode(LEFT_BAK, OUTPUT);
   pinMode(RIGHT_FWD, OUTPUT);
@@ -56,6 +70,8 @@ void setup(){
   MOVE_FWD(RIGHT, 0);
   
   currentState = softStarting;
+  delay(100);
+  BEEPER_OFF();
 }
 
 void loop(){
@@ -91,7 +107,7 @@ void softStarting(){
     MOVE_FWD(LEFT,  count);
     delay(1);
   }else{
-    currentState = waitingForLargeRadiusTurn;
+    currentState = onOffStyle;
   }
 }
 

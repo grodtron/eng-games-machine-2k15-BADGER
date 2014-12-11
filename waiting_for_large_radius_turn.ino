@@ -10,6 +10,12 @@ void waitingForLargeRadiusTurn(){
   
   ++totalCount;
   
+  if(totalCount < 150){
+    BEEPER_ON(); 
+  }else{
+    BEEPER_OFF();
+  }
+  
   if(left){
     awayCount = 0;
     haveTouched = true;
