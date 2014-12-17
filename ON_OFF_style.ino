@@ -34,11 +34,11 @@ void onOffStyle(){
 
     BEEPER_ON();
     MOVE_FWD(RIGHT, 235);
-    MOVE_FWD(LEFT, 22);
+    MOVE_FWD(LEFT, 40);
   }
   
   if(sameCount > 20000L){
     recover();
-    sameCount = 12500L;
+    sameCount = 10000L;
   }
 }

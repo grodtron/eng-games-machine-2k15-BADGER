@@ -22,7 +22,7 @@ void waitingForInitialGap(){
     MOVE_FWD(RIGHT, 190);
     MOVE_FWD(LEFT, 200);    
   }else{
-    currentState = doingInitialGap
+    currentState = doingInitialGap;
   }
 }
 

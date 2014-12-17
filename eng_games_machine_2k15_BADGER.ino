@@ -1,3 +1,6 @@
+#include <Wire.h>
+#include "Adafruit_TCS34725.h"
+
 const int rightSensePin = A0;
 const int leftSensePin = A1;
 const int eStopPin = 7;
@@ -7,9 +10,12 @@ const int rightMotorErrorPin = 0;
 
 const int tiltSensePin = 13;
 
-const int ledPinA   = A3;
-const int ledPinB   = A4;
-const int ledPinC   = A5;
+const int colorSenseLedPin = A3;
+
+// TODO
+const int ledPinA   = 12;
+const int ledPinB   = 12;
+const int ledPinC   = 12;
 
 const int LEFT_FWD = 5;
 const int LEFT_BAK = 3;
@@ -46,7 +52,11 @@ void doingFirstSmallRadiusTurn();
 void waitingForSecondSmallRadiusTurn();
 void error(int code);
 
+void waitingForFinalOrangeLine();
+
 void setup(){
+  Serial.begin(9600);
+  
   BEEPER_ON();
   pinMode(LEFT_FWD, OUTPUT);
   pinMode(LEFT_BAK, OUTPUT);
@@ -65,11 +75,14 @@ void setup(){
   pinMode(ledPinA, OUTPUT);
   pinMode(ledPinB, OUTPUT);
   pinMode(ledPinC, OUTPUT);
-
+  
+  pinMode(colorSenseLedPin, OUTPUT);
+  digitalWrite(colorSenseLedPin, LOW);
+  
   MOVE_FWD(LEFT, 0);
   MOVE_FWD(RIGHT, 0);
   
-  currentState = softStarting;
+  currentState = doingTrackOnRightSide;
   delay(100);
   BEEPER_OFF();
 }
@@ -83,10 +96,10 @@ void loop(){
   digitalWrite(ledPinA, tilt);
   
   if(! digitalRead(leftMotorErrorPin)){
-     error(6); 
+     // TODO error(6); 
   }
   if(! digitalRead(rightMotorErrorPin)){
-     error(7); 
+     // TODO error(7); 
   }
   
   if(digitalRead(eStopPin)){
@@ -107,13 +120,16 @@ void softStarting(){
     MOVE_FWD(LEFT,  count);
     delay(1);
   }else{
-    currentState = onOffStyle;
+    currentState = doingTrackOnRightSide;
   }
 }
 
 void error(int code){
   MOVE_FWD(RIGHT, 0);
   MOVE_FWD(LEFT,  0);
+
+  Serial.print("ERROR: ");
+  Serial.println(code);
 
   while(1){
     for(int i = 0; i < 4; ++i){
