@@ -1,5 +1,5 @@
+#include <Adafruit_TCS34725.h>
 #include <Wire.h>
-#include "Adafruit_TCS34725.h"
 
 const int rightSensePin = A0;
 const int leftSensePin = A1;
@@ -31,6 +31,13 @@ const int RIGHT_BAK = 4;
 #define MOVE_BAK(SIDE, amount) do {          \
   analogWrite(SIDE ## _FWD, 255 - (amount)); \
   digitalWrite(SIDE ## _BAK, HIGH);          \
+} while(0)
+
+#define MOTORS_OFF() do {     \
+  digitalWrite(LEFT_FWD, LOW); \
+  digitalWrite(LEFT_BAK, LOW);   \
+  digitalWrite(RIGHT_BAK, LOW);   \
+  digitalWrite(RIGHT_BAK, LOW);   \
 } while(0)
   
 #define BEEPER_ON() do{ \
