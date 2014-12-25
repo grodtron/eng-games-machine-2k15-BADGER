@@ -1,5 +1,9 @@
+#include <Adafruit_PWMServoDriver.h>
 #include <Adafruit_TCS34725.h>
 #include <Wire.h>
+
+#define BADGER_ADDRESS 0x20
+#define LOADER_ADDRESS 0x21
 
 const int rightSensePin = A0;
 const int leftSensePin = A1;
@@ -22,6 +26,19 @@ const int LEFT_BAK = 3;
 
 const int RIGHT_FWD = 6;
 const int RIGHT_BAK = 4;
+
+#define CLOSE 1025
+#define OPEN 400
+#define MAX_BAG_COUNT 8
+const int servoOrder[MAX_BAG_COUNT] = {11, 4, 10, 3, 9, 2, 8, 1}; // Order to cloe and open flaps, alternating each tower
+/* Servos to Pins
+front  -   back tower
+     8 - 1
+     9 - 2
+    10 - 3
+    11 - 4
+*/
+int bag_count = 0;
 
 #define MOVE_FWD(SIDE, amount) do {  \
   analogWrite(SIDE ## _FWD, amount); \
@@ -92,6 +109,9 @@ void setup(){
   currentState = doingTrackOnRightSide;
   delay(100);
   BEEPER_OFF();
+  
+  Wire.begin(BADGER_ADDRESS);
+  Wire.onReceive(receiveEvent);  
 }
 
 void loop(){
