@@ -13,11 +13,8 @@ void shootingTarget() {
     
     holePeriod = 0;
     woodPeriod = 0;
-    while(0 == woodPeriod) {
-      calculateWoodPeriod();
-    }
-    while(0 == holePeriod) {
-      calculateHolePeriod();
+    while(holePeriod == 0 || woodPeriod == 0) {
+      calculatePeriod();
     }
     Serial.println("Done measuring target periods");     
   }
@@ -47,11 +44,14 @@ void shootingTarget() {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// 1 when hole, 0 when wood
+/* 1 when hole, 0 when wood
+	typical values: wood period ~ 890, hole period ~850. 
+	measurement time: BCET ~2.4s, WCET ~4s
+*/
 void calculatePeriod() {
   if (!digitalRead(irSensorPin)) { // if we start at wood, wait for it to finish, measure hole period first, then wood period
     while(!digitalRead(irSensorPin));
-
+    
     initialTime = millis();
     while(digitalRead(irSensorPin));
     finishTime = millis();
@@ -60,7 +60,7 @@ void calculatePeriod() {
     }
     
     initialTime = millis();
-    while(digitalRead(irSensorPin));
+    while(!digitalRead(irSensorPin));
     finishTime = millis();
     if (finishTime-initialTime>50) {
       woodPeriod = finishTime-initialTime;
@@ -69,7 +69,7 @@ void calculatePeriod() {
     while(digitalRead(irSensorPin));
     
     initialTime = millis();
-    while(digitalRead(irSensorPin));
+    while(!digitalRead(irSensorPin));
     finishTime = millis();
     if (finishTime-initialTime>50) {
       woodPeriod = finishTime-initialTime;
@@ -83,11 +83,10 @@ void calculatePeriod() {
     }
   }
   Serial.print("hole period: ");
-  Serial.println(holePeriod);
+  Serial.print(holePeriod);
 
-  Serial.print("wood period: ");
-  Serial.println(woodPeriod);
-  
+  Serial.print(", wood period: ");
+  Serial.println(woodPeriod); 
 }
 
 void calculateWoodPeriod() {
