@@ -16,6 +16,8 @@ const int tiltSensePin = 13;
 
 const int colorSenseLedPin = A3;
 
+const int irSensorPin = 7;      
+
 // TODO
 const int ledPinA   = 12;
 const int ledPinB   = 12;
@@ -27,8 +29,8 @@ const int LEFT_BAK = 3;
 const int RIGHT_FWD = 6;
 const int RIGHT_BAK = 4;
 
-#define CLOSE 1025
-#define OPEN 400
+#define CLOSE 520
+#define OPEN 200
 #define MAX_BAG_COUNT 8
 const int servoOrder[MAX_BAG_COUNT] = {11, 4, 10, 3, 9, 2, 8, 1}; // Order to cloe and open flaps, alternating each tower
 /* Servos to Pins
@@ -102,6 +104,8 @@ void setup(){
   
   pinMode(colorSenseLedPin, OUTPUT);
   digitalWrite(colorSenseLedPin, LOW);
+  
+  pinMode(irSensorPin, INPUT);
   
   MOVE_FWD(LEFT, 0);
   MOVE_FWD(RIGHT, 0);

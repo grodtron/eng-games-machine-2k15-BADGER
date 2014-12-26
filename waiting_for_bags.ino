@@ -1,6 +1,5 @@
-#include "servo_control.h"
-
-volatile boolean received = false;
+volatile boolean received = false; // flag set when loader arduino has sent a msg
+int tower_to_close = -1;
 
 void waitingForBags() {
   if(received) {
@@ -42,7 +41,7 @@ void closeNextFlap()
   
   Serial.print("Closing servo ");
   Serial.println(servoOrder[bag_count]);
-  servos.setPWM(servoOrder[bag_count], 0, 1100);
+  servos.setPWM(servoOrder[bag_count], 0, CLOSE);
   
   delay(500);
 }
@@ -50,10 +49,9 @@ void closeNextFlap()
 // function that executes when data is received from loader
 void receiveEvent(int bytes)
 {
-  int towerToClose;
   received = true;
   while(Wire.available())
   {
-    towerToClose = Wire.read();
+    tower_to_close = Wire.read();
   }  
 }
