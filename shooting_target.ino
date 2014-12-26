@@ -40,6 +40,7 @@ void shootingTarget() {
   servos.setPWM(bottomServo, 0, OPEN);
   timeBagShooting();
 
+  bag_count--;
 
   if(bag_count == 0) {
     // current_state =

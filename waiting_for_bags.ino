@@ -9,6 +9,8 @@ void waitingForBags() {
     received = false;
   }
   
+  bag_count++;
+  
   if (bag_count == 8) {
      //current_state =  
   }
@@ -26,7 +28,7 @@ void openNextFlap()
   
   Serial.print("Opening servo ");
   Serial.println(servoOrder[MAX_BAG_COUNT - bag_count]);
-  servos.setPWM(servoOrder[MAX_BAG_COUNT - bag_count--], 0, OPEN);
+  servos.setPWM(servoOrder[MAX_BAG_COUNT - bag_count], 0, OPEN);
   delay(500);
 }
 
@@ -40,16 +42,8 @@ void closeNextFlap()
   
   Serial.print("Closing servo ");
   Serial.println(servoOrder[bag_count]);
-  servos.setPWM(servoOrder[bag_count++], 0, 1100);
+  servos.setPWM(servoOrder[bag_count], 0, 1100);
   
-  // Open back flaps for testing
-  if(bag_count == 5) {
-    bag_count = 1;
-    for(int i = 1; i <= MAX_BAG_COUNT; ++i) {
-      servos.setPWM(servoOrder[i], 0, 400);
-      delay(500);
-    }    
-  }
   delay(500);
 }
 
