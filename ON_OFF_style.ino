@@ -1,10 +1,10 @@
 void recover(){
   BEEPER_ON();
 
-  MOVE_BAK(RIGHT, 100);
-  MOVE_FWD(LEFT, 50);
+  MOVE_BAK(LEFT, 100);
+  MOVE_FWD(RIGHT, 50);
 
-  delay(250);
+  delay(500);
   
   BEEPER_OFF();
 }

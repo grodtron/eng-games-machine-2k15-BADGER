@@ -70,7 +70,7 @@ void doingTrackOnRightSide(){
 
   motors.update();
   
-  if(tilt){
+  if(!tilt){
     if(! tilting){
       tiltStartTime = millis();
       tilting = true;
@@ -90,12 +90,13 @@ void goingDownRamp(){
   static boolean nonTilting = false;
   static int nonTiltStartTime = 0;
   
-  if(! tilt ){
+  if(tilt ){
     if(! nonTilting){
       nonTilting = true;
       nonTiltStartTime = millis();
     }else{
       if(millis() - nonTiltStartTime > 450){
+        Serial.println("Waiting for orange line");
         currentState = waitingForFinalOrangeLine;
       }
     }
@@ -112,7 +113,6 @@ void goingDownRamp(){
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_2_4MS, TCS34725_GAIN_1X);
 
 void waitingForFinalOrangeLine(){
   
@@ -150,13 +150,16 @@ void waitingForFinalOrangeLine(){
     tcs.getRawData(&r, &g, &b, &c);
     tcs.getRawData(&r, &g, &b, &c);
     
+    lowerBelt();
+    currentState = shootingTarget;
     if(r > 90 && g > 35  ){
-      while(true){
-        digitalWrite(colorSenseLedPin, LOW);
-        delay(100);
-        digitalWrite(colorSenseLedPin, HIGH);
-        delay(100);
-      }      
+      // Blink the LED
+      for(int i = 0 ; i < 4; ++i){
+        servos.setPWM(15, 0, 0 );
+        delay(500);
+        servos.setPWM(15, 0, 4095 );
+        delay(500);
+      }
     }
   }
 }
