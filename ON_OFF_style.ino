@@ -1,12 +1,8 @@
 void recover(){
-  BEEPER_ON();
-
   MOVE_BAK(LEFT, 100);
   MOVE_FWD(RIGHT, 50);
 
-  delay(500);
-  
-  BEEPER_OFF();
+  delay(500);  
 }
 
 void onOffStyle(){
@@ -21,7 +17,6 @@ void onOffStyle(){
       previousWasLeft = true;
       sameCount = 0;
     }
-    BEEPER_OFF();
     MOVE_FWD(RIGHT, 245);
     MOVE_FWD(LEFT, 255);
   }else{
@@ -32,7 +27,6 @@ void onOffStyle(){
       sameCount = 0;
     }
 
-    BEEPER_ON();
     MOVE_FWD(RIGHT, 235);
     MOVE_FWD(LEFT, 40);
   }

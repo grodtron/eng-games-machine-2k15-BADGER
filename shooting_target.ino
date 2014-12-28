@@ -21,25 +21,37 @@ void shootingTarget() {
   Serial.println(bottomServo);
   servos.setPWM(bottomServo, 0, CLOSE);
   
+  // TODO: Find best time for these delays
   delay(1000);   
   openNextFlap();
   delay(1250);
   
-  servos.setPWM(bottomServo, 0, OPEN);
+  servos.setPWM(bottomServo, 0, OPEN); 
+  // TODO: Test slow servo opening
+  /*for(int i = 0; i < OPEN; ++i) {
+    servos.setPWM(bottomServo, 0, OPEN); 
+    delay(15);    
+  }*/
   timeBagShooting();
 
   bag_count--;
 
   if(bag_count == 0) {
-    // current_state =
-    while(1); // we done son
+    while(1) { // we done son
+      for(int i = 0 ; i < 4; ++i) {
+        servos.setPWM(15, 0, 0 );
+        delay(500);
+        servos.setPWM(15, 0, 4095);
+        delay(500);
+      }
+    }
   }   
-}
+}  
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /* 1 when hole, 0 when wood
-	typical values: wood period ~ 890, hole period ~850. 
+	expected values: wood period ~ 890, hole period ~850. 
 	measurement time: BCET ~2.4s, WCET ~4s
 */
 void calculatePeriod() {
@@ -160,10 +172,11 @@ void lowerBelt() {
   Serial.print("Lowering belt...");
   // lower the belt a bit
   servos.setPWM(9, 0, 0);
-  while(!digitalRead(leftBeltSensePin) && !digitalRead(rightBeltSensePin));
+  while(!digitalRead(leftBeltSensePin) && !digitalRead(rightBeltSensePin)); // Drop until we hit a sensor
   delay(50);
   servos.setPWM(9, 0, 4095);
   
+  // TODO: Maybe go slower to be sure to never skip the first sensor we hit
   if(digitalRead(rightBeltSensePin) != 1) {
     MOVE_FWD(RIGHT, 40);
     MOVE_FWD(LEFT,  40);
@@ -174,7 +187,7 @@ void lowerBelt() {
     Serial.println("left belt switch, going backward");
   }
 
-  while(digitalRead(leftBeltSensePin) != 1 || digitalRead(rightBeltSensePin) != 1);
+  while(digitalRead(leftBeltSensePin) != 1 || digitalRead(rightBeltSensePin) != 1); // Go until both belt sensor pins are touched
   MOVE_FWD(RIGHT, 0);
   MOVE_FWD(LEFT,  0);
   Serial.println("done");

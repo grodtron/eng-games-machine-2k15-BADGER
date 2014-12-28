@@ -1,3 +1,20 @@
+/* Switch pins
+    4  = S1
+    3  = S2
+    2  = S3 
+    A2 = S4
+    A3 = S5
+    A0 = S6
+    13 = S7 
+*/
+
+/* Flaps servos to Pins
+front  -   back tower
+    X - 6
+    3 - 7
+    2 - 4
+    1 - 5
+*/
 
 void runTests() {
 //  TestOpenServos();

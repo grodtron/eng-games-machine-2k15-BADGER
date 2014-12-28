@@ -6,10 +6,9 @@ void waitingForBags() {
     delay(250);
     closeNextFlap();
     received = false;
+    bag_count++;
   }
-  
-  bag_count++;
-  
+    
   if (bag_count == 8) {
      //current_state =  
   }

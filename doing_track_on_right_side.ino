@@ -70,7 +70,7 @@ void doingTrackOnRightSide(){
 
   motors.update();
   
-  if(!tilt){
+  if(!tilt){ // note that when tilt is 0 (LOW), then it is tilting 
     if(! tilting){
       tiltStartTime = millis();
       tilting = true;
@@ -152,7 +152,7 @@ void waitingForFinalOrangeLine(){
     
     lowerBelt();
     currentState = shootingTarget;
-    if(r > 90 && g > 35  ){
+    if(r > 90 && g > 35  ){ // remove this to speed things up?
       // Blink the LED
       for(int i = 0 ; i < 4; ++i){
         servos.setPWM(15, 0, 0 );
