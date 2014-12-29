@@ -7,7 +7,9 @@ const int ShootingSpeed = 1325; // Time to reach the target after turning motors
 void shootingTarget() {
   Serial.print("Bean bags left: ");
   Serial.println(bag_count);
-  calculatePeriod();
+  while (holePeriod < 800 || holePeriod > 900 
+          || woodPeriod < 800 || woodPeriod > 900)
+      calculatePeriod();
  
   static int bottomServo; // Bottom servo that will release the bean bang
 

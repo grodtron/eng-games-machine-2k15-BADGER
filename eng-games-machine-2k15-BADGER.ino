@@ -1,7 +1,8 @@
 /* TODO:  
    
 * Need to fully test complete bag collection state and transition to start moving (includes i2c communication test)
-- Measure hole & wood period every shot, compare it to some expected value? Figure out when is the best time to calculate it too
+- Measure hole & wood period every shot, compare it to some expected value?
+      Figure out when is the best time to calculate it too
 - Need to find a way to measure accurately the shooting time of the target
 - Explore other motor speed for optimal trajectory (needs a better shooting success rate)
 x Opening servos slower when releasing flaps for shooting (TO BE TESTED)
@@ -136,11 +137,11 @@ void setup(){
     servos.setPWM(servoOrder[i], 0, OPEN);
     delay(500);
   }*/
-
+/*
   servos.setPWM(servoOrder[0], 0, CLOSE);
   delay(100);
   servos.setPWM(servoOrder[1], 0, CLOSE);
-
+*/
 #if RUN_TESTS  
   runTests();
   while(1);
