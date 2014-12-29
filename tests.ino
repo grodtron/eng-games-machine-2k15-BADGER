@@ -1,6 +1,7 @@
+const int switchPins[7] = {2, 3, 4, A0, A2, A3, 13};
 /* Switch pins
     4  = S1
-    3  = S2
+    3  = S2 top left
     2  = S3 
     A2 = S4
     A3 = S5
@@ -21,11 +22,13 @@ void runTests() {
 //  TestCloseServos();
 //  TestBagPlacing();
 //  TestFullShootingBags();
-/*TestIRSensor();*/
-  TestShootingBags();
+//  TestIRSensor();
+//  TestShootingBags();
 //  TestBeltLowering();
 //  TestMeasureShootingTime();
-// TestSwitchPins();
+//  TestSwitchPins();
+  TestSlowServoOpen();
+//  TestI2CServo();
 }
 
 void TestMeasureShootingTime() {
@@ -151,11 +154,76 @@ void TestBeltLowering() {
 }
 
 void TestSwitchPins() {
-  for(int i = 0; i < 7; ++i) {
+  /*for(int i = 0; i < 7; ++i) {
     Serial.print(switchPins[i]);
     Serial.print("=");
     Serial.println(digitalRead(switchPins[i])); 
-  }
+  }*/
+  Serial.print("left(");
+  Serial.print(leftSensePin);  
+  Serial.print(")=");
+  Serial.println(digitalRead(leftSensePin));
+  Serial.print("topLeft(");
+  Serial.print(topLeftSensePin);  
+  Serial.print(")=");
+  Serial.println(digitalRead(topLeftSensePin));
+  Serial.print("right(");
+  Serial.print(rightSensePin);  
+  Serial.print(")=");
+  Serial.println(digitalRead(rightSensePin));
+  Serial.print("tilt_1(");
+  Serial.print(tiltSensePin);  
+  Serial.print(")=");
+  Serial.println(digitalRead(tiltSensePin));
+  Serial.print("tilt_2(");
+  Serial.print(tiltSensePin2);  
+  Serial.print(")=");
+  Serial.println(digitalRead(tiltSensePin2));
+  Serial.print("leftBelt(");
+  Serial.print(leftBeltSensePin);  
+  Serial.print(")=");
+  Serial.println(digitalRead(leftBeltSensePin));
+  Serial.print("rightBelt(");
+  Serial.print(rightBeltSensePin);  
+  Serial.print(")=");  
+  Serial.println(digitalRead(rightBeltSensePin));
+  
   Serial.println("===");
   delay(500);  
+}
+
+void TestSlowServoOpen() {
+  servos.setPWM(servoOrder[0], 0, CLOSE); 
+  delay(250);
+  servos.setPWM(servoOrder[1], 0, CLOSE); 
+
+  for(int i = CLOSE; i >= OPEN; --i) {
+    servos.setPWM(servoOrder[0], 0, i); 
+    delay(15);    
+  }
+//  while(!Serial.available()) ; Serial.read();
+  
+  for(int i = CLOSE; i >= OPEN; --i) {
+    servos.setPWM(servoOrder[1], 0, i);
+    delay(15);    
+  }  
+  
+}
+
+void TestI2CServo() {
+  bag_count = 0; 
+  
+  // open all flaps
+  for(int i = 2; i < MAX_BAG_COUNT; ++i) {
+    servos.setPWM(servoOrder[i], 0, OPEN);
+    delay(500);
+  }
+
+  servos.setPWM(servoOrder[0], 0, CLOSE);
+  delay(100);
+  servos.setPWM(servoOrder[1], 0, CLOSE);
+  
+  while(bag_count < 8) {
+    waitingForBags();  
+  }
 }

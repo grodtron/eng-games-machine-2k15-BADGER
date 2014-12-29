@@ -28,8 +28,8 @@ void shootingTarget() {
   
   servos.setPWM(bottomServo, 0, OPEN); 
   // TODO: Test slow servo opening
-  /*for(int i = 0; i < OPEN; ++i) {
-    servos.setPWM(bottomServo, 0, OPEN); 
+  /*for(int i = CLOSE; i >= OPEN; ++i) {
+    servos.setPWM(bottomServo, 0, i); 
     delay(15);    
   }*/
   timeBagShooting();

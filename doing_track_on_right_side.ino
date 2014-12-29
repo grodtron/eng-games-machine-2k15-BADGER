@@ -121,9 +121,9 @@ void waitingForFinalOrangeLine(){
     haveInitialized = true;
     
     if(tcs.begin()){
-      digitalWrite(colorSenseLedPin, HIGH);
+      servos.setPWM(15, 0, 0 );
     }else{
-      digitalWrite(colorSenseLedPin, LOW);
+      servos.setPWM(15, 0, 4095);
     }
     
   }

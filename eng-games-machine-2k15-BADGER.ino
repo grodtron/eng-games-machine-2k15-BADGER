@@ -13,7 +13,6 @@ x Opening servos slower when releasing flaps for shooting (TO BE TESTED)
 
 #define BADGER_ADDRESS 0x20
 #define LOADER_ADDRESS 0x21
-#define RUN_TESTS 0
 
 const int N_MOTORS = 4;
 
@@ -22,15 +21,14 @@ const int leftMotorErrorPin = 1;
 const int rightMotorErrorPin = 0;*/
 
 const int tiltSensePin = 13;
+const int tiltSensePin2 = A2;
 const int rightSensePin = 4;
 const int leftSensePin = 2;
-const int colorSenseLedPin = A3;
-const int irSensorPin = A1;      
+const int topLeftSensePin = 3;
 const int leftBeltSensePin = A0;
 const int rightBeltSensePin = A3;
-
-const int targetPin = 3;
-const int switchPins[7] = {2, 3, 4, A0, A2, A3, 13};
+//const int targetPin = 3;
+const int irSensorPin = A1;      
 
 // TODO
 const int ledPinA   = 12;
@@ -74,13 +72,15 @@ int bag_count = 0;
   digitalWrite(SIDE ## _BAK_DIR, LOW);   \
 } while(0)
 
-boolean left, right, tilt;
+boolean left, topLeft, right, tilt, tilt2;
 void (*currentState)();
 
 void softStarting();
 void onOffStyle(); // Race mode
 void doingTrackOnRightSide(); // Tower mode
 void error(int code);
+
+#define RUN_TESTS 1
 
 void setup(){
   Serial.begin(9600);
@@ -95,31 +95,29 @@ void setup(){
     digitalWrite(digPins[i], LOW);
   }
   
-  for(int i = 0; i < 7; ++i) {
-    pinMode(switchPins[i], INPUT);  
-  }
-  
 //  MOVE_FWD(LEFT, 0);
 //  MOVE_FWD(RIGHT, 0);
 
   pinMode(leftSensePin, INPUT);
+  pinMode(topLeftSensePin, INPUT);
   pinMode(rightSensePin, INPUT);
   pinMode(tiltSensePin, INPUT);
-  pinMode(irSensorPin, INPUT);
-  pinMode(targetPin, INPUT);
+  pinMode(tiltSensePin2, INPUT);
   pinMode(leftBeltSensePin, INPUT);
   pinMode(rightBeltSensePin, INPUT);
 
+  pinMode(irSensorPin, INPUT);
+
   digitalWrite(tiltSensePin, HIGH);
+  digitalWrite(tiltSensePin2, HIGH);
+
   /*
   pinMode(eStopPin, INPUT);  
   pinMode(leftMotorErrorPin, INPUT);
   pinMode(rightMotorErrorPin, INPUT);
   pinMode(ledPinA, OUTPUT);
   pinMode(ledPinB, OUTPUT);
-  pinMode(ledPinC, OUTPUT);
-  pinMode(colorSenseLedPin, OUTPUT);
-  digitalWrite(colorSenseLedPin, LOW);*/
+  pinMode(ledPinC, OUTPUT);*/
   if (tcs.begin()) {
     Serial.println("Found sensor");
   } else {
@@ -159,8 +157,10 @@ void setup(){
 
 void loop(){
   left  = digitalRead(leftSensePin);
+  topLeft = digitalRead(topLeftSensePin);
   right = digitalRead(rightSensePin);
   tilt = digitalRead(tiltSensePin);  
+  tilt2 = digitalRead(tiltSensePin2);
 
   if(currentState){
     currentState();
