@@ -1,6 +1,6 @@
 void recover(){
-  MOVE_BAK(LEFT, 100);
-  MOVE_FWD(RIGHT, 50);
+  MOVE_SIDE_BAK(LEFT, 100);
+  MOVE_SIDE_FWD(RIGHT, 50);
 
   delay(500);  
 }
@@ -17,8 +17,8 @@ void onOffStyle(){
       previousWasLeft = true;
       sameCount = 0;
     }
-    MOVE_FWD(RIGHT, 245);
-    MOVE_FWD(LEFT, 255);
+    MOVE_SIDE_FWD(RIGHT, 245);
+    MOVE_SIDE_FWD(LEFT, 255);
   }else{
     if( ! previousWasLeft){
       ++sameCount;
@@ -27,8 +27,8 @@ void onOffStyle(){
       sameCount = 0;
     }
 
-    MOVE_FWD(RIGHT, 235);
-    MOVE_FWD(LEFT, 40);
+    MOVE_SIDE_FWD(RIGHT, 235);
+    MOVE_SIDE_FWD(LEFT, 40);
   }
   
   if(sameCount > 20000L){

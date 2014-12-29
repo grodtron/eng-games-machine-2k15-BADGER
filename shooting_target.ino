@@ -161,17 +161,17 @@ void lowerBelt() {
   
   // TODO: Maybe go slower to be sure to never skip the first sensor we hit
   if(digitalRead(rightBeltSensePin) != 1) {
-    MOVE_FWD(RIGHT, 40);
-    MOVE_FWD(LEFT,  40);
+    MOVE_SIDE_FWD(RIGHT, 40);
+    MOVE_SIDE_FWD(LEFT,  40);
     Serial.println("right belt switch, going forward");
   } else if(digitalRead(leftBeltSensePin) != 1) {
-      MOVE_BAK(RIGHT, 40);
-      MOVE_BAK(LEFT, 40);
+      MOVE_SIDE_BAK(RIGHT, 40);
+      MOVE_SIDE_BAK(LEFT, 40);
     Serial.println("left belt switch, going backward");
   }
 
   while(digitalRead(leftBeltSensePin) != 1 || digitalRead(rightBeltSensePin) != 1); // Go until both belt sensor pins are touched
-  MOVE_FWD(RIGHT, 0);
-  MOVE_FWD(LEFT,  0);
+  MOVE_SIDE_FWD(RIGHT, 0);
+  MOVE_SIDE_FWD(LEFT,  0);
   Serial.println("done");
 }

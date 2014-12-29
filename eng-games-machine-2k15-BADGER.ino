@@ -47,30 +47,37 @@ const int servoOrder[MAX_BAG_COUNT] = {1, 5, 2, 4, 3, 7, 12, 6}; // Order to clo
 int pwmPins [N_MOTORS] = {9,  10, 11, 6};
 int digPins [N_MOTORS] = {12, 5, 8, 7};
 
-const int RIGHT_FWD_PWM  = 9;
-const int RIGHT_BAK_PWM  = 11;
-const int LEFT_FWD_PWM = 10;
-const int LEFT_BAK_PWM = 6;
+const int RIGHT_FRONT_PWM  = 9;
+const int RIGHT_REAR_PWM  = 11;
+const int LEFT_FRONT_PWM = 10;
+const int LEFT_REAR_PWM = 6;
 
-const int RIGHT_FWD_DIR  = 12;
-const int RIGHT_BAK_DIR  = 8;
-const int LEFT_FWD_DIR = 5;
-const int LEFT_BAK_DIR = 7;
+const int RIGHT_FRONT_DIR  = 12;
+const int RIGHT_REAR_DIR  = 8;
+const int LEFT_FRONT_DIR = 5;
+const int LEFT_REAR_DIR = 7;
                 
 int bag_count = 0;
 
-#define MOVE_FWD(SIDE, amount) do {  \
-  analogWrite(SIDE ## _FWD_PWM, 255 - (amount)); \
-  analogWrite(SIDE ## _BAK_PWM, 255 - (amount)); \
-  digitalWrite(SIDE ## _FWD_DIR, HIGH);   \
-  digitalWrite(SIDE ## _BAK_DIR, HIGH);   \
+#define MOVE_WHEEL_FWD(SIDE, FRONT_REAR, AMOUNT) do { \
+  analogWrite (SIDE ## _ ## FRONT_REAR ## _PWM, 255 - (AMOUNT)); \
+  digitalWrite(SIDE ## _ ## FRONT_REAR ## _DIR, HIGH); \
 } while(0)
 
-#define MOVE_BAK(SIDE, amount) do {          \
-  analogWrite(SIDE ## _FWD_PWM, amount); \
-  analogWrite(SIDE ## _BAK_PWM, amount); \
-  digitalWrite(SIDE ## _FWD_DIR, LOW);   \
-  digitalWrite(SIDE ## _BAK_DIR, LOW);   \
+#define MOVE_WHEEL_BAK(SIDE, FRONT_REAR, AMOUNT) do { \
+  analogWrite (SIDE ## _ ## FRONT_REAR ## _PWM, (AMOUNT)); \
+  digitalWrite(SIDE ## _ ## FRONT_REAR ## _DIR, LOW); \
+} while(0)
+
+
+#define MOVE_SIDE_FWD(SIDE, AMOUNT) do {  \
+  MOVE_WHEEL_FWD(SIDE, FRONT, AMOUNT); \
+  MOVE_WHEEL_FWD(SIDE, REAR, AMOUNT);  \
+} while(0)
+
+#define MOVE_SIDE_BAK(SIDE, AMOUNT) do {          \
+  MOVE_WHEEL_BAK(SIDE, FRONT, AMOUNT); \
+  MOVE_WHEEL_BAK(SIDE, REAR, AMOUNT);  \
 } while(0)
 
 boolean left, topLeft, right, tilt, tilt2;
@@ -96,8 +103,8 @@ void setup(){
     digitalWrite(digPins[i], LOW);
   }
   
-//  MOVE_FWD(LEFT, 0);
-//  MOVE_FWD(RIGHT, 0);
+//  MOVE_SIDE_FWD(LEFT, 0);
+//  MOVE_SIDE_FWD(RIGHT, 0);
 
   pinMode(leftSensePin, INPUT);
   pinMode(topLeftSensePin, INPUT);
@@ -126,7 +133,7 @@ void setup(){
   for(int i = 0; i < 10; ++i) {
     servos.setPWM(9, 0, 4095); // Belt motor off
   }
-  currentState = waitingForBags;
+  currentState = doingTrackOnRightSide;
 
   // open all flaps
   for(int i = 2; i < MAX_BAG_COUNT; ++i) {
@@ -163,8 +170,8 @@ void loop(){
   left  = digitalRead(leftSensePin);
   topLeft = digitalRead(topLeftSensePin);
   right = digitalRead(rightSensePin);
-  tilt = digitalRead(tiltSensePin);  
-  tilt2 = digitalRead(tiltSensePin2);
+  tilt  = !digitalRead(tiltSensePin);  
+  tilt2 = !digitalRead(tiltSensePin2);
 
   if(currentState){
     currentState();
@@ -176,8 +183,8 @@ void softStarting(){
   static int count = 0;
   
   if(++count < 75){
-    MOVE_FWD(RIGHT, count);
-    MOVE_FWD(LEFT,  count);
+    MOVE_SIDE_FWD(RIGHT, count);
+    MOVE_SIDE_FWD(LEFT,  count);
     delay(1);
   }else{
     currentState = onOffStyle;
@@ -185,8 +192,8 @@ void softStarting(){
 }
 
 void error(int code){
-  MOVE_FWD(RIGHT, 0);
-  MOVE_FWD(LEFT,  0);
+  MOVE_SIDE_FWD(RIGHT, 0);
+  MOVE_SIDE_FWD(LEFT,  0);
 
   Serial.print("ERROR: ");
   Serial.println(code);

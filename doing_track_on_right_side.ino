@@ -36,14 +36,14 @@ class MotorTweener {
         }
         
         if(left > 0){
-          MOVE_FWD(LEFT, left);
+          MOVE_SIDE_FWD(LEFT, left);
         }else{
-          MOVE_BAK(LEFT, abs(left));
+          MOVE_SIDE_BAK(LEFT, abs(left));
         }
         if(right > 0){
-          MOVE_FWD(RIGHT, right);
+          MOVE_SIDE_FWD(RIGHT, right);
         }else{
-          MOVE_BAK(RIGHT, abs(right));
+          MOVE_SIDE_BAK(RIGHT, abs(right));
         }
       }
     }
@@ -70,12 +70,12 @@ void doingTrackOnRightSide(){
 
   motors.update();
   
-  if(!tilt){ // note that when tilt is 0 (LOW), then it is tilting 
+  if(tilt && tilt2){ 
     if(! tilting){
       tiltStartTime = millis();
       tilting = true;
     }else{
-      if( millis() - tiltStartTime > 350 ){
+      if( millis() - tiltStartTime > 250 ){
         currentState = goingDownRamp;
       }    
     }
@@ -86,24 +86,29 @@ void doingTrackOnRightSide(){
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void stopEverything(){
+  motors.setTargetSpeed(0, 0);
+  motors.update();
+}
+
 void goingDownRamp(){
   static boolean nonTilting = false;
   static int nonTiltStartTime = 0;
   
-  if(tilt ){
+  if( (!tilt) && (!tilt2) ){
     if(! nonTilting){
       nonTilting = true;
       nonTiltStartTime = millis();
     }else{
-      if(millis() - nonTiltStartTime > 450){
+      if(millis() - nonTiltStartTime > 300){
         Serial.println("Waiting for orange line");
-        currentState = waitingForFinalOrangeLine;
+        currentState = stopEverything;
       }
     }
   }else{
     nonTilting = false;
     if(right){
-      motors.setTargetSpeed(0, 30);
+      motors.setTargetSpeed(25 , 30);
     }else{
       motors.setTargetSpeed(30, 25);
     }   
@@ -132,6 +137,16 @@ void waitingForFinalOrangeLine(){
   if(left){
     motors.setTargetSpeed(45, 40);
   }else{
+    
+    /*
+    
+    FR: 100
+    FL: 75
+    RR: 83
+    RL: 42
+    
+    */
+    
     motors.setTargetSpeed(-60, 80);
   }
 
@@ -141,8 +156,8 @@ void waitingForFinalOrangeLine(){
   tcs.getRawData(&r, &g, &b, &c);
   
   if( r > 8 ){
-    MOVE_FWD(RIGHT, 0);
-    MOVE_FWD(LEFT,  0);
+    MOVE_SIDE_FWD(RIGHT, 0);
+    MOVE_SIDE_FWD(LEFT,  0);
 
     tcs.setIntegrationTime(TCS34725_INTEGRATIONTIME_24MS);
 
