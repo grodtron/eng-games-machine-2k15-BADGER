@@ -22,7 +22,8 @@ void runTests() {
 //  TestBagPlacing();
 //  TestFullShootingBags();
 /*TestIRSensor();*/
-  TestShootingBags();
+  //TestShootingBags();
+  TestTargetMovementCalculations();
 //  TestBeltLowering();
 //  TestMeasureShootingTime();
 // TestSwitchPins();
@@ -43,11 +44,23 @@ void TestMeasureShootingTime() {
   while(!Serial.available()) ; Serial.read();  */
 }
 
+void TestTargetMovementCalculations() {
+  int num_iterations = 10;
+  Serial.println("====Testing target time movement calculations====");
+  long initial_time, final_time;
+  for (int i = 0; i < num_iterations; ++i) {
+      Serial.println(i);
+      initial_time = millis();
+      calculatePeriod();
+      final_time = millis();
+      Serial.print("calculate period execution time: ");
+      Serial.println(final_time - initial_time);
+  }
+}
+
 void TestShootingBags() {
   Serial.println("====Testing proper time shooting====");
-  while(holePeriod == 0 || woodPeriod == 0) {
-    calculatePeriod();
-  }
+  calculatePeriod();
   
   timeBagShooting();
   while(!Serial.available()) ; Serial.read();

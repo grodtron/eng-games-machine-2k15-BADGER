@@ -7,11 +7,8 @@ const int ShootingSpeed = 1325; // Time to reach the target after turning motors
 void shootingTarget() {
   Serial.print("Bean bags left: ");
   Serial.println(bag_count);
-  holePeriod = 0;
-  woodPeriod = 0;
-  while(holePeriod == 0 || woodPeriod == 0) {
-    calculatePeriod();
-  }
+  calculatePeriod();
+ 
   static int bottomServo; // Bottom servo that will release the bean bang
 
   // Alternate bottom servo from which bean bags will be dropped
@@ -55,82 +52,56 @@ void shootingTarget() {
 	measurement time: BCET ~2.4s, WCET ~4s
 */
 void calculatePeriod() {
-  if (!digitalRead(irSensorPin)) { // if we start at wood, wait for it to finish, measure hole period first, then wood period
-    while(!digitalRead(irSensorPin));
-    
-    initialTime = millis();
-    while(digitalRead(irSensorPin));
-    finishTime = millis();
-    if (finishTime-initialTime>50) {
-      holePeriod = finishTime-initialTime;
-    }
-    
-    initialTime = millis();
-    while(!digitalRead(irSensorPin));
-    finishTime = millis();
-    if (finishTime-initialTime>50) {
-      woodPeriod = finishTime-initialTime;
-    }
-  } else { // we started at hole, wait for finish, measure wood period first, then hole
-    while(digitalRead(irSensorPin));
-    
-    initialTime = millis();
-    while(!digitalRead(irSensorPin));
-    finishTime = millis();
-    if (finishTime-initialTime>50) {
-      woodPeriod = finishTime-initialTime;
-    }
-    
-    initialTime = millis();
-    while(digitalRead(irSensorPin));
-    finishTime = millis();
-    if (finishTime-initialTime>50) {
-      holePeriod = finishTime-initialTime;
-    }
+    holePeriod = woodPeriod = 0;
+    while(holePeriod == 0 || woodPeriod == 0) {
+        if (!digitalRead(irSensorPin)) {
+            /* start at wood, wait till end, must measure hole period 
+            then measures wood's period only if not calculated */
+            while(!digitalRead(irSensorPin));
+
+            initialTime = millis();
+            while(digitalRead(irSensorPin));
+            finishTime = millis();
+            if (finishTime-initialTime>50) {
+                holePeriod = finishTime-initialTime;
+            }
+
+            if(woodPeriod > 50)
+                break;
+
+            initialTime = millis();
+            while(!digitalRead(irSensorPin));
+            finishTime = millis();
+            if (finishTime-initialTime>50) {
+                woodPeriod = finishTime-initialTime;
+            }
+        } else { // start at hole, wait till end, measure wood period then hole's
+            /* start at hole, wait till end, must measure wood's period 
+            then measures hole's period only if not calculated */
+            while(digitalRead(irSensorPin));
+
+            initialTime = millis();
+            while(!digitalRead(irSensorPin));
+            finishTime = millis();
+            if (finishTime-initialTime>50) {
+                woodPeriod = finishTime-initialTime;
+            }
+            
+            if(holePeriod > 50)
+                break;
+            
+            initialTime = millis();
+            while(digitalRead(irSensorPin));
+            finishTime = millis();
+            if (finishTime-initialTime>50) {
+                holePeriod = finishTime-initialTime;
+            }
+        }
   }
   Serial.print("hole period: ");
   Serial.print(holePeriod);
-
   Serial.print(", wood period: ");
   Serial.println(woodPeriod); 
-}
-
-void calculateWoodPeriod() {
-  if (!digitalRead(irSensorPin)) { // detecting object
-    while(!digitalRead(irSensorPin));
-    while(digitalRead(irSensorPin));
-  } else { // if it's one of the Halls
-    while(digitalRead(irSensorPin));
-    while(!digitalRead(irSensorPin));
-    while(digitalRead(irSensorPin));
-  }
-  initialTime = millis();
-  while(!digitalRead(irSensorPin));
-  finishTime = millis();
-  if (finishTime-initialTime>50) {
-    woodPeriod = finishTime-initialTime;
-    Serial.print("wood period: ");
-    Serial.println(woodPeriod);
-  }
-}
-
-void calculateHolePeriod() {
-  if (!digitalRead(irSensorPin)) { // detecting object
-    while(!digitalRead(irSensorPin));
-    while(digitalRead(irSensorPin));
-    while(!digitalRead(irSensorPin));
-  } else { // if it's one of the Halls
-    while(digitalRead(irSensorPin));
-    while(!digitalRead(irSensorPin));
-  }
-  initialTime = millis();
-  while(digitalRead(irSensorPin));
-  finishTime = millis();
-  if (finishTime-initialTime>50) {
-    holePeriod=finishTime-initialTime;
-    Serial.print("hole period: ");
-    Serial.println(holePeriod);
-  }
 }
 
 // Signal to start spinning conveyor belt

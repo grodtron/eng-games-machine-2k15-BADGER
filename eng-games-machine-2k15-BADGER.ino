@@ -13,7 +13,7 @@ x Opening servos slower when releasing flaps for shooting (TO BE TESTED)
 
 #define BADGER_ADDRESS 0x20
 #define LOADER_ADDRESS 0x21
-#define RUN_TESTS 0
+#define RUN_TESTS 1
 
 const int N_MOTORS = 4;
 
