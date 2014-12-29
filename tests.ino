@@ -23,14 +23,14 @@ void runTests() {
 //  TestBagPlacing();
 //  TestFullShootingBags();
 /*TestIRSensor();*/
- for (int i=0; i < 30; ++i)
-     TestShootingBags();
+// for (int i=0; i < 30; ++i)
+//     TestShootingBags();
 //  TestTargetMovementCalculations();
 //  TestIRSensor();
 //  TestShootingBags();
 //  TestBeltLowering();
 //  TestMeasureShootingTime();
-//  TestSwitchPins();
+  while(1) TestSwitchPins();
 //  TestSlowServoOpen();
 //  TestI2CServo();
 }
@@ -182,7 +182,7 @@ void TestSwitchPins() {
   Serial.print(")=");
   Serial.println(digitalRead(topLeftSensePin));
   Serial.print("right(");
-  Serial.print(rightSensePin);  
+  Serial.print(rightSensePin);
   Serial.print(")=");
   Serial.println(digitalRead(rightSensePin));
   Serial.print("tilt_1(");
@@ -203,7 +203,7 @@ void TestSwitchPins() {
   Serial.println(digitalRead(rightBeltSensePin));
   
   Serial.println("===");
-  delay(500);  
+  delay(1000);  
 }
 
 void TestSlowServoOpen() {
