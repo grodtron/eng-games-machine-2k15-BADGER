@@ -30,9 +30,22 @@ void runTests() {
 //  TestShootingBags();
 //  TestBeltLowering();
 //  TestMeasureShootingTime();
-  while(1) TestSwitchPins();
-//  TestSlowServoOpen();
+//  while(1) TestSwitchPins();
+//while(1)  TestSlowServoOpen();
 //  TestI2CServo();
+//  TestBagDrops();
+TestCollectBagAndShoot();
+}
+
+void TestCollectBagAndShoot() {
+bag_count = 0;
+  while(bag_count < 8) {
+    waitingForBags();
+  }
+  delay(1000);
+  while(bag_count > 0) {
+     shootingTarget(); 
+  }
 }
 
 void TestMeasureShootingTime() {
@@ -207,24 +220,30 @@ void TestSwitchPins() {
 }
 
 void TestSlowServoOpen() {
-  servos.setPWM(servoOrder[0], 0, CLOSE); 
+  Serial.println("====Testing bottom servos slow open====");
+
+  servos.setPWM(servoOrder[0], 0, CLOSE+50); 
   delay(250);
   servos.setPWM(servoOrder[1], 0, CLOSE); 
 
+  while(!Serial.available()) ; Serial.read();
+
   for(int i = CLOSE; i >= OPEN; --i) {
     servos.setPWM(servoOrder[0], 0, i); 
-    delay(15);    
+    delay(2);    
   }
-//  while(!Serial.available()) ; Serial.read();
+  while(!Serial.available()) ; Serial.read();
   
   for(int i = CLOSE; i >= OPEN; --i) {
     servos.setPWM(servoOrder[1], 0, i);
-    delay(15);    
+//    delay(2);    
   }  
-  
+  while(!Serial.available()) ; Serial.read();  
 }
 
 void TestI2CServo() {
+  Serial.println("====Testing i2c and servo closing====");
+
   bag_count = 0; 
   
   // open all flaps
@@ -233,11 +252,49 @@ void TestI2CServo() {
     delay(500);
   }
 
-  servos.setPWM(servoOrder[0], 0, CLOSE);
+  servos.setPWM(servoOrder[0], 0, CLOSE+50);
   delay(100);
   servos.setPWM(servoOrder[1], 0, CLOSE);
   
   while(bag_count < 8) {
     waitingForBags();  
   }
+  Serial.println("Got all bags, woohoo");
+}
+
+void TestBagDrops() {
+  Serial.println("====Testing bag drops====");
+   bag_count = 8;
+   while(bag_count > 0) {
+    Serial.print("Bean bags left: ");
+    Serial.println(bag_count);
+    while(!Serial.available()) ; Serial.read();  
+   
+    static int bottomServo; // Bottom servo that will release the bean bang
+  
+    // Alternate bottom servo from which bean bags will be dropped
+    bottomServo = servoOrder[bag_count % 2];
+    
+    Serial.print("Toggling bottom servo: ");
+    Serial.println(bottomServo);
+    servos.setPWM(bottomServo, 0, CLOSE);
+    
+    // TODO: Find best time for these delays
+    delay(500);   
+    openNextFlap();
+    delay(250);
+
+      servos.setPWM(bottomServo, 0, OPEN); 
+    
+    if(bottomServo == servoOrder[0]) {
+      for(int i = CLOSE; i >= OPEN; --i) {
+        servos.setPWM(servoOrder[0], 0, i); 
+        delay(2);    
+      }  
+    } else if (bottomServo == servoOrder[1]) {
+      servos.setPWM(bottomServo, 0, OPEN); 
+    }
+    
+    bag_count--;
+  }  
 }

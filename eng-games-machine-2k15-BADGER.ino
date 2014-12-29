@@ -39,8 +39,8 @@ const int ledPinC   = 12;
 Adafruit_PWMServoDriver servos = Adafruit_PWMServoDriver();
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_2_4MS, TCS34725_GAIN_1X);
 
-#define CLOSE 520
-#define OPEN 200
+#define CLOSE 510
+#define OPEN 215
 #define MAX_BAG_COUNT 8
 const int servoOrder[MAX_BAG_COUNT] = {1, 5, 2, 4, 3, 7, 12, 6}; // Order to close and open flaps, alternating each tower
 
@@ -81,12 +81,12 @@ void onOffStyle(); // Race mode
 void doingTrackOnRightSide(); // Tower mode
 void error(int code);
 
-#define RUN_TESTS 1
+#define RUN_TESTS 0
 
 void setup(){
   Serial.begin(9600);
-//  Wire.begin(BADGER_ADDRESS);
-//  Wire.onReceive(receiveEvent);
+  Wire.begin(BADGER_ADDRESS);
+  Wire.onReceive(receiveEvent);
 
   for(int i = 0; i < N_MOTORS; ++i){
     pinMode(pwmPins[i], OUTPUT);
@@ -119,6 +119,25 @@ void setup(){
   pinMode(ledPinA, OUTPUT);
   pinMode(ledPinB, OUTPUT);
   pinMode(ledPinC, OUTPUT);*/
+
+  servos.begin();
+  servos.setPWMFreq(60);
+
+  for(int i = 0; i < 10; ++i) {
+    servos.setPWM(9, 0, 4095); // Belt motor off
+  }
+  currentState = waitingForBags;
+
+  // open all flaps
+  for(int i = 2; i < MAX_BAG_COUNT; ++i) {
+    servos.setPWM(servoOrder[i], 0, OPEN);
+    delay(500);
+  }
+
+  servos.setPWM(servoOrder[0], 0, CLOSE+50);
+  delay(100);
+  servos.setPWM(servoOrder[1], 0, CLOSE);
+
   if (tcs.begin()) {
     Serial.println("Found sensor");
   } else {
@@ -126,22 +145,6 @@ void setup(){
     while (1);
   }
 
-  servos.begin();
-  servos.setPWMFreq(60);
-
-  servos.setPWM(9, 0, 4095); // Belt motor off
-  currentState = doingTrackOnRightSide;
-
-  // open all flaps
-  /*for(int i = 2; i < MAX_BAG_COUNT; ++i) {
-    servos.setPWM(servoOrder[i], 0, OPEN);
-    delay(500);
-  }*/
-/*
-  servos.setPWM(servoOrder[0], 0, CLOSE);
-  delay(100);
-  servos.setPWM(servoOrder[1], 0, CLOSE);
-*/
 #if RUN_TESTS  
   runTests();
   while(1);

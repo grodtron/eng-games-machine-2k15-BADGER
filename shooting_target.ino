@@ -18,18 +18,28 @@ void shootingTarget() {
   
   Serial.print("Toggling bottom servo: ");
   Serial.println(bottomServo);
-  servos.setPWM(bottomServo, 0, CLOSE);
+  
+  if(bottomServo == servoOrder[0]) {
+    servos.setPWM(bottomServo, 0, CLOSE+50);
+    
+  } else {
+    servos.setPWM(bottomServo, 0, CLOSE);    
+  }
   
   // TODO: Find best time for these delays
-  delay(1000);   
+  delay(500);   
   openNextFlap();
-  delay(1250);
+  delay(250);
   
   servos.setPWM(bottomServo, 0, OPEN); 
   // TODO: Test slow servo opening
-  /*for(int i = CLOSE; i >= OPEN; ++i) {
-    servos.setPWM(bottomServo, 0, i); 
-    delay(15);    
+  /*if(bottomServo == servoOrder[0]) {
+    for(int i = CLOSE; i >= OPEN; --i) {
+      servos.setPWM(servoOrder[0], 0, i); 
+      delay(2);    
+    }  
+  } else if (bottomServo == servoOrder[1]) {
+    servos.setPWM(bottomServo, 0, OPEN); 
   }*/
   timeBagShooting();
 

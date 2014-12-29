@@ -120,10 +120,11 @@ void waitingForFinalOrangeLine(){
   if(!haveInitialized){
     haveInitialized = true;
     
+    // turn on or off the LED to show the status of the color sensor
     if(tcs.begin()){
-      servos.setPWM(15, 0, 0 );
+      servos.setPWM(15, 0, 4095 );
     }else{
-      servos.setPWM(15, 0, 4095);
+      servos.setPWM(15, 0, 0);
     }
     
   }
@@ -157,8 +158,7 @@ void waitingForFinalOrangeLine(){
       for(int i = 0 ; i < 4; ++i){
         servos.setPWM(15, 0, 0 );
         delay(500);
-        servos.setPWM(15, 0, 4095 );
-        delay(500);
+         delay(500);
       }
     }
   }

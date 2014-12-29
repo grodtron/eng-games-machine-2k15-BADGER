@@ -7,10 +7,13 @@ void waitingForBags() {
     closeNextFlap();
     received = false;
     bag_count++;
+    Serial.print("Total bags: ");
+    Serial.println(bag_count);
   }
     
   if (bag_count == 8) {
-     //current_state =  
+     currentState = doingTrackOnRightSide;
+     Serial.println("Got all bags dawg");
   }
 }
 
@@ -39,8 +42,10 @@ void closeNextFlap()
   }
   
   Serial.print("Closing servo ");
-  Serial.println(servoOrder[bag_count]);
-  servos.setPWM(servoOrder[bag_count], 0, CLOSE);
+  if(bag_count < 6) {
+    Serial.println(servoOrder[bag_count+2]);
+    servos.setPWM(servoOrder[bag_count+2], 0, CLOSE);    
+  }
   
   delay(500);
 }
