@@ -65,7 +65,7 @@ void doingTrackOnRightSide(){
   if(right){
     motors.setTargetSpeed(20, 120);
   }else{
-    motors.setTargetSpeed(60, 40);
+    motors.setTargetSpeed(70, 40);
   }
 
   motors.update();
