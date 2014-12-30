@@ -12,7 +12,8 @@ x Opening servos slower when releasing flaps for shooting (TO BE TESTED)
 #include <Adafruit_TCS34725.h>
 #include <Adafruit_INA219.h>
 #include <Wire.h>
-#include "motors.h"
+#include "SingleMotorTweener.h"
+//#include "motors.h"
 
 #define BADGER_ADDRESS 0x20
 #define LOADER_ADDRESS 0x21
@@ -45,7 +46,7 @@ const int servoOrder[MAX_BAG_COUNT] = {1, 5, 2, 4, 3, 7, 12, 6}; // Order to clo
 const int pwmPins [N_MOTORS] = {9,  10, 11, 6};
 const int digPins [N_MOTORS] = {12, 5, 8, 7};
 int bag_count = 0;
-
+int total_bags = MAX_BAG_COUNT;
 boolean left, topLeft, right, tilt, tilt2, start, started = false;
 void (*currentState)();
 
@@ -110,7 +111,7 @@ void setup(){
   if (tcs.begin()) {
     Serial.println("Found color sensor, gonna shoot sum bags");
     currentState = waitingForBags;
-  } else {
+  } else if (digitalRead(leftSensePin)) {
     Serial.println("No color sensor, we gon run today");
     while (1);
     currentState = softStarting;
@@ -139,11 +140,6 @@ void loop(){
   tilt2 = !digitalRead(tiltSensePin2);
   start = digitalRead(startButton);  
 
-  if(start && !started && isBatteryReady() == true) {
-    started = true;
-    currentState = doingTrackOnRightSide;  
-  }
-
   if(currentState){
     currentState();
   }
@@ -160,18 +156,6 @@ void softStarting(){
   }else{
     currentState = onOffStyle;
   }
-}
-
-boolean isBatteryReady() {
-  float shuntvoltage, busvoltage, loadvoltage = 0;
-
-  shuntvoltage = ina219.getShuntVoltage_mV();
-  busvoltage = ina219.getBusVoltage_V();
-  loadvoltage = busvoltage + (shuntvoltage / 1000);
-  Serial.print("Bus Voltage:   "); Serial.print(busvoltage); Serial.println(" V");
-  Serial.print("Shunt Voltage: "); Serial.print(shuntvoltage); Serial.println(" mV");
-  Serial.print("Load Voltage:  "); Serial.print(loadvoltage); Serial.println(" V");
-  return (loadvoltage > BATTERY_THRESHOLD);
 }
 
 void error(int code){

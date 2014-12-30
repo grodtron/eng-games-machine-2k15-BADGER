@@ -37,6 +37,8 @@ void runTests() {
 //  TestI2CServo();
 //  TestBagDrops();
 // TestCollectBagAndShoot();
+// for(int i = 0; i < 5; ++i) TestSingleMotorTweener();
+// for(int i = 0; i < 6; ++i) TestMotorMovements();
 }
 
 void TestCollectBagAndShoot() {
@@ -190,47 +192,43 @@ void TestMotor() {
   i = i % 4;  
 }
 
-void TestBeltLowering() {
-  lowerBelt();  
+void TestMotorMovements() {
+  Serial.println("====Testing motor macros====");
+  static int count = 0;
+  Serial.println(count);
+  switch(count) {
+    case 0:
+      MOVE_SIDE_FWD(RIGHT, 255);
+      MOVE_SIDE_FWD(LEFT, 255);      
+      break;
+    case 1:
+      MOVE_SIDE_BAK(RIGHT, 255);
+      MOVE_SIDE_BAK(LEFT, 255);
+      break;    
+    case 2:
+      MOVE_SIDE_FWD(RIGHT, 128);
+      MOVE_SIDE_FWD(LEFT, 128);
+      break;  
+    case 3:
+      MOVE_SIDE_BAK(RIGHT, 128);
+      MOVE_SIDE_BAK(LEFT, 128);
+      break;
+    case 4:
+      MOVE_SIDE_FWD(RIGHT, 50);
+      while(!Serial.available()) ; Serial.read();        
+      MOVE_SIDE_FWD(LEFT, 50);
+      break;  
+    case 5:
+      MOVE_SIDE_FWD(RIGHT, 0);
+      MOVE_SIDE_FWD(LEFT, 0);
+      break;  
+  }
+  count = (count + 1) % 6;
+  while(!Serial.available()) ; Serial.read();
 }
 
-void TestSwitchPins() {
-  /*for(int i = 0; i < 7; ++i) {
-    Serial.print(switchPins[i]);
-    Serial.print("=");
-    Serial.println(digitalRead(switchPins[i])); 
-  }*/
-  Serial.print("left(");
-  Serial.print(leftSensePin);  
-  Serial.print(")=");
-  Serial.println(digitalRead(leftSensePin));
-  Serial.print("start(");
-  Serial.print(startButton);  
-  Serial.print(")=");
-  Serial.println(digitalRead(startButton));
-  Serial.print("right(");
-  Serial.print(rightSensePin);
-  Serial.print(")=");
-  Serial.println(digitalRead(rightSensePin));
-  Serial.print("tilt_1(");
-  Serial.print(tiltSensePin);  
-  Serial.print(")=");
-  Serial.println(digitalRead(tiltSensePin));
-  Serial.print("tilt_2(");
-  Serial.print(tiltSensePin2);  
-  Serial.print(")=");
-  Serial.println(digitalRead(tiltSensePin2));
-  Serial.print("leftBelt(");
-  Serial.print(leftBeltSensePin);  
-  Serial.print(")=");
-  Serial.println(digitalRead(leftBeltSensePin));
-  Serial.print("rightBelt(");
-  Serial.print(rightBeltSensePin);  
-  Serial.print(")=");  
-  Serial.println(digitalRead(rightBeltSensePin));
-  
-  Serial.println("===");
-  delay(1000);  
+void TestBeltLowering() {
+  lowerBelt();  
 }
 
 void TestSlowServoOpen() {
@@ -333,4 +331,90 @@ void TestINA219() {
   Serial.println("");
 
   delay(2000);  
+}
+
+void TestSingleMotorTweener() {
+  Serial.println("====Testing single motor tweener===");
+  static int count = 0;
+  Serial.println(count);
+  SingleMotorTweener left_front(LEFT_FRONT), left_rear(LEFT_REAR), right_front(RIGHT_FRONT), right_rear(RIGHT_REAR); 
+   
+  switch(count) {
+    case 0:
+      left_front.setTargetSpeed(120);
+      left_front.update();
+      while(!Serial.available()) ; Serial.read();
+      left_front.setTargetSpeed(-120);
+      left_front.update();      
+      break;
+    case 1:
+      left_rear.setTargetSpeed(120);
+      left_rear.update();
+      while(!Serial.available()) ; Serial.read();
+      left_rear.setTargetSpeed(-120);
+      left_rear.update();
+      break;    
+    case 2:
+      right_front.setTargetSpeed(120);
+      right_front.update();
+      while(!Serial.available()) ; Serial.read();
+      right_front.setTargetSpeed(-120);
+      right_front.update();
+      break;  
+    case 3:
+      right_rear.setTargetSpeed(120);
+      right_rear.update();
+      while(!Serial.available()) ; Serial.read();
+      right_front.setTargetSpeed(-120);
+      right_front.update();
+      break;
+    case 4:
+      right_rear.setTargetSpeed(0);
+      left_front.setTargetSpeed(0);
+      left_rear.setTargetSpeed(0);
+      left_front.setTargetSpeed(0);
+      left_front.update();
+      break;  
+  }
+  count = (count + 1) % 5;
+  while(!Serial.available()) ; Serial.read();
+}
+
+void TestSwitchPins() {
+  /*for(int i = 0; i < 7; ++i) {
+    Serial.print(switchPins[i]);
+    Serial.print("=");
+    Serial.println(digitalRead(switchPins[i])); 
+  }*/
+  Serial.print("left(");
+  Serial.print(leftSensePin);  
+  Serial.print(")=");
+  Serial.println(digitalRead(leftSensePin));
+  Serial.print("start(");
+  Serial.print(startButton);  
+  Serial.print(")=");
+  Serial.println(digitalRead(startButton));
+  Serial.print("right(");
+  Serial.print(rightSensePin);
+  Serial.print(")=");
+  Serial.println(digitalRead(rightSensePin));
+  Serial.print("tilt_1(");
+  Serial.print(tiltSensePin);  
+  Serial.print(")=");
+  Serial.println(digitalRead(tiltSensePin));
+  Serial.print("tilt_2(");
+  Serial.print(tiltSensePin2);  
+  Serial.print(")=");
+  Serial.println(digitalRead(tiltSensePin2));
+  Serial.print("leftBelt(");
+  Serial.print(leftBeltSensePin);  
+  Serial.print(")=");
+  Serial.println(digitalRead(leftBeltSensePin));
+  Serial.print("rightBelt(");
+  Serial.print(rightBeltSensePin);  
+  Serial.print(")=");  
+  Serial.println(digitalRead(rightBeltSensePin));
+  
+  Serial.println("===");
+  delay(1000);  
 }
