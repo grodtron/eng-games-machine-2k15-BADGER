@@ -1,5 +1,6 @@
 volatile boolean received = false; // flag set when loader arduino has sent a msg
 int tower_to_close = -1;
+int total_bags = MAX_BAG_COUNT;
 
 void waitingForBags() {
   if(received) {
@@ -28,8 +29,8 @@ void openNextFlap()
   }
   
   Serial.print("Opening servo ");
-  Serial.println(servoOrder[MAX_BAG_COUNT - bag_count]);
-  servos.setPWM(servoOrder[MAX_BAG_COUNT - bag_count], 0, OPEN);
+  Serial.println(servoOrder[total_bags - bag_count]);
+  servos.setPWM(servoOrder[total_bags - bag_count], 0, OPEN);
   delay(500);
 }
 

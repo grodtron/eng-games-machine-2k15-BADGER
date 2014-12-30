@@ -204,10 +204,10 @@ void TestSwitchPins() {
   Serial.print(leftSensePin);  
   Serial.print(")=");
   Serial.println(digitalRead(leftSensePin));
-  Serial.print("topLeft(");
-  Serial.print(topLeftSensePin);  
+  Serial.print("start(");
+  Serial.print(startButton);  
   Serial.print(")=");
-  Serial.println(digitalRead(topLeftSensePin));
+  Serial.println(digitalRead(startButton));
   Serial.print("right(");
   Serial.print(rightSensePin);
   Serial.print(")=");
