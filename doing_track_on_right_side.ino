@@ -102,7 +102,8 @@ void goingDownRamp(){
     }else{
       if(millis() - nonTiltStartTime > 300){
         Serial.println("Waiting for orange line");
-        currentState = stopEverything;
+        currentState = waitingForFinalOrangeLine
+        ;
       }
     }
   }else{

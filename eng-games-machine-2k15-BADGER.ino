@@ -133,7 +133,7 @@ void setup(){
   for(int i = 0; i < 10; ++i) {
     servos.setPWM(9, 0, 4095); // Belt motor off
   }
-  currentState = doingTrackOnRightSide;
+  currentState = waitingForBags;
 
   // open all flaps
   for(int i = 2; i < MAX_BAG_COUNT; ++i) {
