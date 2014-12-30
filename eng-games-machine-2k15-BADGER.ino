@@ -10,10 +10,14 @@ x Opening servos slower when releasing flaps for shooting (TO BE TESTED)
 */
 #include <Adafruit_PWMServoDriver.h>
 #include <Adafruit_TCS34725.h>
+#include <Adafruit_INA219.h>
 #include <Wire.h>
+//#include <Statistic.h>
+//#include "MotorTweener.h"
 
 #define BADGER_ADDRESS 0x20
 #define LOADER_ADDRESS 0x21
+#define BATTERY_THRESHOLD 9.5
 
 const int N_MOTORS = 4;
 
@@ -29,6 +33,7 @@ const int topLeftSensePin = 3;
 const int leftBeltSensePin = A0;
 const int rightBeltSensePin = A3;
 //const int targetPin = 3;
+// const int startButton = X;
 const int irSensorPin = A1;      
 
 // TODO
@@ -38,6 +43,7 @@ const int ledPinC   = 12;
 
 Adafruit_PWMServoDriver servos = Adafruit_PWMServoDriver();
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_2_4MS, TCS34725_GAIN_1X);
+Adafruit_INA219 ina219;
 
 #define CLOSE 510
 #define OPEN 215
@@ -56,8 +62,6 @@ const int RIGHT_FRONT_DIR  = 12;
 const int RIGHT_REAR_DIR  = 8;
 const int LEFT_FRONT_DIR = 5;
 const int LEFT_REAR_DIR = 7;
-                
-int bag_count = 0;
 
 #define MOVE_WHEEL_FWD(SIDE, FRONT_REAR, AMOUNT) do { \
   analogWrite (SIDE ## _ ## FRONT_REAR ## _PWM, 255 - (AMOUNT)); \
@@ -75,12 +79,14 @@ int bag_count = 0;
   MOVE_WHEEL_FWD(SIDE, REAR, AMOUNT);  \
 } while(0)
 
-#define MOVE_SIDE_BAK(SIDE, AMOUNT) do {          \
+#define MOVE_SIDE_BAK(SIDE, AMOUNT) do {  \
   MOVE_WHEEL_BAK(SIDE, FRONT, AMOUNT); \
   MOVE_WHEEL_BAK(SIDE, REAR, AMOUNT);  \
-} while(0)
+} while(0)               
 
-boolean left, topLeft, right, tilt, tilt2;
+int bag_count = 0;
+
+boolean left, topLeft, right, tilt, tilt2, start, started = false;
 void (*currentState)();
 
 void softStarting();
@@ -151,6 +157,8 @@ void setup(){
     Serial.println("No TCS34725 found ... check your connections");
     while (1);
   }
+  
+  ina219.begin();
 
 #if RUN_TESTS  
   runTests();
@@ -172,6 +180,12 @@ void loop(){
   right = digitalRead(rightSensePin);
   tilt  = !digitalRead(tiltSensePin);  
   tilt2 = !digitalRead(tiltSensePin2);
+// start = digitalRead(startButton);  
+
+  if(start && !started && isBatteryReady() == true) {
+    started = true;
+    currentState = doingTrackOnRightSide;  
+  }
 
   if(currentState){
     currentState();
@@ -189,6 +203,18 @@ void softStarting(){
   }else{
     currentState = onOffStyle;
   }
+}
+
+boolean isBatteryReady() {
+  float shuntvoltage, busvoltage, loadvoltage = 0;
+
+  shuntvoltage = ina219.getShuntVoltage_mV();
+  busvoltage = ina219.getBusVoltage_V();
+  loadvoltage = busvoltage + (shuntvoltage / 1000);
+  Serial.print("Bus Voltage:   "); Serial.print(busvoltage); Serial.println(" V");
+  Serial.print("Shunt Voltage: "); Serial.print(shuntvoltage); Serial.println(" mV");
+  Serial.print("Load Voltage:  "); Serial.print(loadvoltage); Serial.println(" V");
+  return (loadvoltage > BATTERY_THRESHOLD);
 }
 
 void error(int code){
