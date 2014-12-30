@@ -39,7 +39,7 @@ void shootingTarget() {
       delay(2);    
     }  
   } else if (bottomServo == servoOrder[1]) {
-    servos.setPWM(bottomServo, 0, OPEN); 
+    servos.setPWM(bottomServo, 0, OPEN);  // seems to work better when this side opens fast
   }*/
   timeBagShooting();
 

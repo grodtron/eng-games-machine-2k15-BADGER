@@ -1,3 +1,5 @@
+#include "Statistic.h"
+
 const int switchPins[7] = {2, 3, 4, A0, A2, A3, 13};
 /* Switch pins
     4  = S1
@@ -18,14 +20,13 @@ front  -   back tower
 */
 
 void runTests() {
-//  TestOpenServos();
-//  TestCloseServos();
+  //  TestOpenServos();
 //  TestBagPlacing();
 //  TestFullShootingBags();
 /*TestIRSensor();*/
 // for (int i=0; i < 30; ++i)
 //     TestShootingBags();
-//  TestTargetMovementCalculations();
+// TestTargetMovementCalculations();
 //  TestIRSensor();
 //  TestShootingBags();
 //  TestBeltLowering();
@@ -34,7 +35,7 @@ void runTests() {
 //while(1)  TestSlowServoOpen();
 //  TestI2CServo();
 //  TestBagDrops();
-TestCollectBagAndShoot();
+// TestCollectBagAndShoot();
 }
 
 void TestCollectBagAndShoot() {
@@ -64,17 +65,35 @@ void TestMeasureShootingTime() {
 }
 
 void TestTargetMovementCalculations() {
-  int num_iterations = 10;
+  Statistic statsHole, statsWood, statsRunTime;
+  statsHole.clear(); statsWood.clear(); statsRunTime.clear();
+  int num_iterations = 500;
   Serial.println("====Testing target time movement calculations====");
-  long initial_time, final_time;
+  long initial_time, final_time, run_time;
   for (int i = 0; i < num_iterations; ++i) {
       Serial.println(i);
       initial_time = millis();
       calculatePeriod();
       final_time = millis();
+      run_time = final_time - initial_time;
       Serial.print("calculate period execution time: ");
-      Serial.println(final_time - initial_time);
+      Serial.println(run_time);
+      statsHole.add(holePeriod);
+      statsWood.add(woodPeriod);
+      statsRunTime.add(run_time);
   }
+  Serial.println("=================================================");
+  Serial.print("average running time: "); Serial.println(statsRunTime.average());
+  Serial.print("Hole period: "); Serial.println(statsHole.average());
+  Serial.print("max: "); Serial.println(statsHole.maximum());
+  Serial.print("min: "); Serial.println(statsHole.minimum());
+  Serial.print("pop std: "); Serial.println(statsHole.pop_stdev());
+  Serial.print("unbiased std: "); Serial.println(statsHole.unbiased_stdev());
+  Serial.print("Wood period: "); Serial.println(statsWood.average());
+  Serial.print("max: "); Serial.println(statsWood.maximum());
+  Serial.print("min: "); Serial.println(statsWood.minimum());
+  Serial.print("pop std: "); Serial.println(statsWood.pop_stdev());
+  Serial.print("unbiased std: "); Serial.println(statsWood.unbiased_stdev());
 }
 
 void TestShootingBags() {
@@ -143,14 +162,8 @@ void TestCloseServos() {
 
 void TestIRSensor() {
   Serial.println("====Testing IR sensor (period calculation)====");
-
-  while(holePeriod == 0 || woodPeriod == 0) {
-    calculatePeriod();
-  }
-
-  while(holePeriod == 0 || woodPeriod == 0) {
-    calculatePeriod();    
-  }
+  calculatePeriod();
+  calculatePeriod();    
 }
 
 void TestMotor() {
