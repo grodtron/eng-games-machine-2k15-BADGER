@@ -11,6 +11,8 @@ x Opening servos slower when releasing flaps for shooting (TO BE TESTED)
 #include <Adafruit_PWMServoDriver.h>
 #include <Adafruit_TCS34725.h>
 #include <Wire.h>
+#include "SingleMotorTweener.h"
+//#include "motors.h"
 
 #define BADGER_ADDRESS 0x20
 #define LOADER_ADDRESS 0x21
@@ -80,7 +82,9 @@ int bag_count = 0;
   MOVE_WHEEL_BAK(SIDE, REAR, AMOUNT);  \
 } while(0)
 
-boolean left, topLeft, right, tilt, tilt2;
+int total_bags = MAX_BAG_COUNT;
+boolean left, topLeft, right, tilt, tilt2, start, started = false;
+
 void (*currentState)();
 
 void softStarting();
@@ -146,9 +150,10 @@ void setup(){
   servos.setPWM(servoOrder[1], 0, CLOSE);
 
   if (tcs.begin()) {
-    Serial.println("Found sensor");
-  } else {
-    Serial.println("No TCS34725 found ... check your connections");
+    Serial.println("Found color sensor, gonna shoot sum bags");
+    currentState = waitingForBags;
+  } else if (digitalRead(leftSensePin)) {
+    Serial.println("No color sensor, we gon run today");
     while (1);
   }
 
@@ -172,6 +177,7 @@ void loop(){
   right = digitalRead(rightSensePin);
   tilt  = !digitalRead(tiltSensePin);  
   tilt2 = !digitalRead(tiltSensePin2);
+  start = digitalRead(startButton);  
 
   if(currentState){
     currentState();
