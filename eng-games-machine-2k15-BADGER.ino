@@ -14,10 +14,11 @@ x Opening servos slower when releasing flaps for shooting (TO BE TESTED)
 #include "SingleMotorTweener.h"
 //#include "motors.h"
 
+#include <Adafruit_INA219.h>
+Adafruit_INA219 ina219;
+
 #define BADGER_ADDRESS 0x20
 #define LOADER_ADDRESS 0x21
-
-const int N_MOTORS = 4;
 
 /*const int eStopPin = 7;
 const int leftMotorErrorPin = 1;
@@ -27,7 +28,7 @@ const int tiltSensePin = 13;
 const int tiltSensePin2 = A2;
 const int rightSensePin = 4;
 const int leftSensePin = 2;
-const int topLeftSensePin = 3;
+const int startButton = 3;
 const int leftBeltSensePin = A0;
 const int rightBeltSensePin = A3;
 //const int targetPin = 3;
@@ -48,39 +49,8 @@ const int servoOrder[MAX_BAG_COUNT] = {1, 5, 2, 4, 3, 7, 0, 6}; // Order to clos
 
 int pwmPins [N_MOTORS] = {9,  10, 11, 6};
 int digPins [N_MOTORS] = {12, 5, 8, 7};
-
-const int RIGHT_FRONT_PWM  = 9;
-const int RIGHT_REAR_PWM  = 11;
-const int LEFT_FRONT_PWM = 10;
-const int LEFT_REAR_PWM = 6;
-
-const int RIGHT_FRONT_DIR  = 12;
-const int RIGHT_REAR_DIR  = 8;
-const int LEFT_FRONT_DIR = 5;
-const int LEFT_REAR_DIR = 7;
                 
 int bag_count = 0;
-
-#define MOVE_WHEEL_FWD(SIDE, FRONT_REAR, AMOUNT) do { \
-  analogWrite (SIDE ## _ ## FRONT_REAR ## _PWM, 255 - (AMOUNT)); \
-  digitalWrite(SIDE ## _ ## FRONT_REAR ## _DIR, HIGH); \
-} while(0)
-
-#define MOVE_WHEEL_BAK(SIDE, FRONT_REAR, AMOUNT) do { \
-  analogWrite (SIDE ## _ ## FRONT_REAR ## _PWM, (AMOUNT)); \
-  digitalWrite(SIDE ## _ ## FRONT_REAR ## _DIR, LOW); \
-} while(0)
-
-
-#define MOVE_SIDE_FWD(SIDE, AMOUNT) do {  \
-  MOVE_WHEEL_FWD(SIDE, FRONT, AMOUNT); \
-  MOVE_WHEEL_FWD(SIDE, REAR, AMOUNT);  \
-} while(0)
-
-#define MOVE_SIDE_BAK(SIDE, AMOUNT) do {          \
-  MOVE_WHEEL_BAK(SIDE, FRONT, AMOUNT); \
-  MOVE_WHEEL_BAK(SIDE, REAR, AMOUNT);  \
-} while(0)
 
 int total_bags = MAX_BAG_COUNT;
 boolean left, topLeft, right, tilt, tilt2, start, started = false;
@@ -96,9 +66,27 @@ void error(int code);
 
 void setup(){
   Serial.begin(9600);
+
+  Serial.println("testing");
+
   Wire.begin(BADGER_ADDRESS);
   Wire.onReceive(receiveEvent);
 
+  servos.begin();
+  servos.setPWMFreq(60);
+
+  Serial.print("Stopping pulley ");
+  for(int i = 0; i < 10; ++i) {
+    servos.setPWM(9, 0, 4095); // Belt motor off
+    Serial.print(".");
+  }
+  Serial.println(" done");
+  
+  Serial.println("opening voltage sensor");
+  ina219.begin();
+
+
+  Serial.println("init'ing motors");
   for(int i = 0; i < N_MOTORS; ++i){
     pinMode(pwmPins[i], OUTPUT);
     pinMode(digPins[i], OUTPUT);
@@ -107,11 +95,8 @@ void setup(){
     digitalWrite(digPins[i], LOW);
   }
   
-//  MOVE_SIDE_FWD(LEFT, 0);
-//  MOVE_SIDE_FWD(RIGHT, 0);
-
   pinMode(leftSensePin, INPUT);
-  pinMode(topLeftSensePin, INPUT);
+  pinMode(startButton, INPUT);
   pinMode(rightSensePin, INPUT);
   pinMode(tiltSensePin, INPUT);
   pinMode(tiltSensePin2, INPUT);
@@ -123,22 +108,9 @@ void setup(){
   digitalWrite(tiltSensePin, HIGH);
   digitalWrite(tiltSensePin2, HIGH);
 
-  /*
-  pinMode(eStopPin, INPUT);  
-  pinMode(leftMotorErrorPin, INPUT);
-  pinMode(rightMotorErrorPin, INPUT);
-  pinMode(ledPinA, OUTPUT);
-  pinMode(ledPinB, OUTPUT);
-  pinMode(ledPinC, OUTPUT);*/
-
-  servos.begin();
-  servos.setPWMFreq(60);
-
-  for(int i = 0; i < 10; ++i) {
-    servos.setPWM(9, 0, 4095); // Belt motor off
-  }
   currentState = waitingForBags;
 
+  Serial.println("open all flaps");
   // open all flaps
   for(int i = 2; i < MAX_BAG_COUNT; ++i) {
     servos.setPWM(servoOrder[i], 0, OPEN);
@@ -165,15 +137,15 @@ void setup(){
    // Blink color sensor LED
   for(int i = 0 ; i < 4; ++i) {
     servos.setPWM(15, 0, 0 );
-    delay(500);
+    delay(150);
     servos.setPWM(15, 0, 4095 );
-    delay(500);
+    delay(150);
   }
 }
 
 void loop(){
   left  = digitalRead(leftSensePin);
-  topLeft = digitalRead(topLeftSensePin);
+  topLeft = digitalRead(startButton);
   right = digitalRead(rightSensePin);
   tilt  = !digitalRead(tiltSensePin);  
   tilt2 = !digitalRead(tiltSensePin2);

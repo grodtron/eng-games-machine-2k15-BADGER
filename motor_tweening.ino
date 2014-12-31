@@ -1,9 +1,6 @@
 // IN PROGRESS
-<<<<<<< HEAD
 
-=======
 /*
->>>>>>> oli-in-progress
 class MotorTweener {
   public:
     static const int DELAY_TIME = 1;
@@ -54,8 +51,5 @@ class MotorTweener {
     int right, rightTarget;
     long lastUpdateTime;
   
-<<<<<<< HEAD
 };
-=======
-};*/
->>>>>>> oli-in-progress
+*/
