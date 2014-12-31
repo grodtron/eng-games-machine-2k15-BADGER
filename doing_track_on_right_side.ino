@@ -1,73 +1,15 @@
-class MotorTweener {
-  public:
-    static const int DELAY_TIME = 1;
-  
-    MotorTweener() : 
-    left(0), leftTarget(0),
-    right(0), rightTarget(0),
-    lastUpdateTime(millis() - DELAY_TIME)
-    {}
-  
-    void setTargetSpeed(int newLeftTarget, int newRightTarget){
-      if(leftTarget != newLeftTarget && rightTarget != newRightTarget){
-        leftTarget  = newLeftTarget;
-        rightTarget = newRightTarget;
-        Serial.println("New Target: ");
-        Serial.print("    Left : "); Serial.println(leftTarget);
-        Serial.print("    Right: "); Serial.println(rightTarget);
-      }
-    }
-    
-    void update(){
-      long now = millis();
-      if(now - DELAY_TIME > lastUpdateTime){
-        lastUpdateTime = now;
-        
-        int leftDelta = leftTarget - left;
-        if(leftDelta){
-          left += (leftDelta/2);
-          Serial.print("Update left : "); Serial.println(left);
-        }
-        
-        int rightDelta = rightTarget - right;
-        if(rightDelta){
-          right += (rightDelta/2);
-          Serial.print("Update right: "); Serial.println(right);
-        }
-        
-        if(left > 0){
-          MOVE_SIDE_FWD(LEFT, left);
-        }else{
-          MOVE_SIDE_BAK(LEFT, abs(left));
-        }
-        if(right > 0){
-          MOVE_SIDE_FWD(RIGHT, right);
-        }else{
-          MOVE_SIDE_BAK(RIGHT, abs(right));
-        }
-      }
-    }
-  private:
-    int left,  leftTarget;
-    int right, rightTarget;
-    long lastUpdateTime;
-  
-};
-
-MotorTweener motors;
-
 void doingTrackOnRightSide(){
    
   static boolean tilting = false;
   static int tiltStartTime = 0;
   
   if(right){
-    motors.setTargetSpeed(20, 120);
+    // TODO motors.setTargetSpeed(20, 120);
   }else{
-    motors.setTargetSpeed(70, 40);
+    // TODO motors.setTargetSpeed(70, 40);
   }
 
-  motors.update();
+  // TODO motors.update();
   
   if(tilt && tilt2){ 
     if(! tilting){
@@ -86,8 +28,8 @@ void doingTrackOnRightSide(){
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void stopEverything(){
-  motors.setTargetSpeed(0, 0);
-  motors.update();
+  // TODO motors.setTargetSpeed(0, 0);
+  // TODO motors.update();
 }
 
 void goingDownRamp(){
@@ -108,12 +50,12 @@ void goingDownRamp(){
   }else{
     nonTilting = false;
     if(right){
-      motors.setTargetSpeed(25 , 30);
+      // TODO motors.setTargetSpeed(25 , 30);
     }else{
-      motors.setTargetSpeed(30, 25);
+      // TODO motors.setTargetSpeed(30, 25);
     }   
   }
-  motors.update();
+  // TODO motors.update();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -135,7 +77,7 @@ void waitingForFinalOrangeLine(){
   }
   
   if(left){
-    motors.setTargetSpeed(45, 40);
+    // TODO motors.setTargetSpeed(45, 40);
   }else{
     
     /*
@@ -147,10 +89,10 @@ void waitingForFinalOrangeLine(){
     
     */
     
-    motors.setTargetSpeed(-60, 80);
+    // TODO motors.setTargetSpeed(-60, 80);
   }
 
-  motors.update();
+  // TODO motors.update();
 
   uint16_t r, g, b, c;
   tcs.getRawData(&r, &g, &b, &c);

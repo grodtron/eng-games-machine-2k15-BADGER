@@ -2,7 +2,7 @@ volatile boolean received = false; // flag set when loader arduino has sent a ms
 int tower_to_close = -1;
 
 void waitingForBags() {
-  if(start && !started && isBatteryReady() == true) { // check right switch?
+/*  if(start && !started && isBatteryReady() == true) { // check right switch?
     started = true;
     total_bags = bag_count;
     for(int i = 2; i < MAX_BAG_COUNT; ++i){ // Close servos before we gtfo
@@ -24,12 +24,13 @@ void waitingForBags() {
   if (bag_count == 8) {
      currentState = doingTrackOnRightSide;
      Serial.println("Got all bags dawg");
-  }
+  }*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 boolean isBatteryReady() {
+  /*
   float shuntvoltage, busvoltage, loadvoltage = 0;
 
   shuntvoltage = ina219.getShuntVoltage_mV();
@@ -39,11 +40,13 @@ boolean isBatteryReady() {
   Serial.print("Shunt Voltage: "); Serial.print(shuntvoltage); Serial.println(" mV");
   Serial.print("Load Voltage:  "); Serial.print(loadvoltage); Serial.println(" V");
   return (loadvoltage > BATTERY_THRESHOLD);
+  */
 }
 
 // Opens a flap in order
 void openNextFlap()
 {
+  /*
   if(bag_count < 0) {
     Serial.println("wtf got negative bags");
     bag_count = MAX_BAG_COUNT;
@@ -53,6 +56,7 @@ void openNextFlap()
   Serial.println(servoOrder[total_bags - bag_count]);
   servos.setPWM(servoOrder[total_bags - bag_count], 0, OPEN);
   delay(500);
+  */
 }
 
 // Cycles through all flaps to close in order, closes 1 flap at a time

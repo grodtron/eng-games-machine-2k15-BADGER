@@ -1,5 +1,3 @@
-#include "Statistic.h"
-
 const int switchPins[7] = {2, 3, 4, A0, A2, A3, 13};
 /* Switch pins
     4  = S1
@@ -20,25 +18,23 @@ front  -   back tower
 */
 
 void runTests() {
-  //  TestOpenServos();
+  TestOpenServos();
+  TestCloseServos();
 //  TestBagPlacing();
 //  TestFullShootingBags();
 /*TestIRSensor();*/
 // for (int i=0; i < 30; ++i)
 //     TestShootingBags();
-// TestTargetMovementCalculations();
+//  TestTargetMovementCalculations();
 //  TestIRSensor();
 //  TestShootingBags();
 //  TestBeltLowering();
 //  TestMeasureShootingTime();
 //  while(1) TestSwitchPins();
 //while(1)  TestSlowServoOpen();
-//while(1)  TestINA219();
 //  TestI2CServo();
 //  TestBagDrops();
-// TestCollectBagAndShoot();
-// for(int i = 0; i < 5; ++i) TestSingleMotorTweener();
-// for(int i = 0; i < 6; ++i) TestMotorMovements();
+//TestCollectBagAndShoot();
 }
 
 void TestCollectBagAndShoot() {
@@ -68,35 +64,17 @@ void TestMeasureShootingTime() {
 }
 
 void TestTargetMovementCalculations() {
-  Statistic statsHole, statsWood, statsRunTime;
-  statsHole.clear(); statsWood.clear(); statsRunTime.clear();
-  int num_iterations = 500;
+  int num_iterations = 10;
   Serial.println("====Testing target time movement calculations====");
-  long initial_time, final_time, run_time;
+  long initial_time, final_time;
   for (int i = 0; i < num_iterations; ++i) {
       Serial.println(i);
       initial_time = millis();
       calculatePeriod();
       final_time = millis();
-      run_time = final_time - initial_time;
       Serial.print("calculate period execution time: ");
-      Serial.println(run_time);
-      statsHole.add(holePeriod);
-      statsWood.add(woodPeriod);
-      statsRunTime.add(run_time);
+      Serial.println(final_time - initial_time);
   }
-  Serial.println("=================================================");
-  Serial.print("average running time: "); Serial.println(statsRunTime.average());
-  Serial.print("Hole period: "); Serial.println(statsHole.average());
-  Serial.print("max: "); Serial.println(statsHole.maximum());
-  Serial.print("min: "); Serial.println(statsHole.minimum());
-  Serial.print("pop std: "); Serial.println(statsHole.pop_stdev());
-  Serial.print("unbiased std: "); Serial.println(statsHole.unbiased_stdev());
-  Serial.print("Wood period: "); Serial.println(statsWood.average());
-  Serial.print("max: "); Serial.println(statsWood.maximum());
-  Serial.print("min: "); Serial.println(statsWood.minimum());
-  Serial.print("pop std: "); Serial.println(statsWood.pop_stdev());
-  Serial.print("unbiased std: "); Serial.println(statsWood.unbiased_stdev());
 }
 
 void TestShootingBags() {
@@ -143,7 +121,7 @@ void TestFullShootingBags() {
 void TestOpenServos() {
   Serial.println("====Testing opening all servos====");
 
-  for(int servoNum = 1; servoNum < 9; ++servoNum){
+  for(int servoNum = 0; servoNum < 8; ++servoNum){
     while(!Serial.available()) ; Serial.read(); 
     Serial.println(servoNum);
     // open each servo
@@ -154,7 +132,7 @@ void TestOpenServos() {
 
 void TestCloseServos() {
   Serial.println("====Testing closing all servos====");
-  for(int servoNum = 1; servoNum < 9; ++servoNum){
+  for(int servoNum = 0; servoNum < 8; ++servoNum){
     while(!Serial.available()) ; Serial.read(); 
     Serial.println(servoNum);
     // close each servo
@@ -165,8 +143,14 @@ void TestCloseServos() {
 
 void TestIRSensor() {
   Serial.println("====Testing IR sensor (period calculation)====");
-  calculatePeriod();
-  calculatePeriod();    
+
+  while(holePeriod == 0 || woodPeriod == 0) {
+    calculatePeriod();
+  }
+
+  while(holePeriod == 0 || woodPeriod == 0) {
+    calculatePeriod();    
+  }
 }
 
 void TestMotor() {
@@ -192,43 +176,47 @@ void TestMotor() {
   i = i % 4;  
 }
 
-void TestMotorMovements() {
-  Serial.println("====Testing motor macros====");
-  static int count = 0;
-  Serial.println(count);
-  switch(count) {
-    case 0:
-      MOVE_SIDE_FWD(RIGHT, 255);
-      MOVE_SIDE_FWD(LEFT, 255);      
-      break;
-    case 1:
-      MOVE_SIDE_BAK(RIGHT, 255);
-      MOVE_SIDE_BAK(LEFT, 255);
-      break;    
-    case 2:
-      MOVE_SIDE_FWD(RIGHT, 128);
-      MOVE_SIDE_FWD(LEFT, 128);
-      break;  
-    case 3:
-      MOVE_SIDE_BAK(RIGHT, 128);
-      MOVE_SIDE_BAK(LEFT, 128);
-      break;
-    case 4:
-      MOVE_SIDE_FWD(RIGHT, 50);
-      while(!Serial.available()) ; Serial.read();        
-      MOVE_SIDE_FWD(LEFT, 50);
-      break;  
-    case 5:
-      MOVE_SIDE_FWD(RIGHT, 0);
-      MOVE_SIDE_FWD(LEFT, 0);
-      break;  
-  }
-  count = (count + 1) % 6;
-  while(!Serial.available()) ; Serial.read();
-}
-
 void TestBeltLowering() {
   lowerBelt();  
+}
+
+void TestSwitchPins() {
+  /*for(int i = 0; i < 7; ++i) {
+    Serial.print(switchPins[i]);
+    Serial.print("=");
+    Serial.println(digitalRead(switchPins[i])); 
+  }*/
+  Serial.print("left(");
+  Serial.print(leftSensePin);  
+  Serial.print(")=");
+  Serial.println(digitalRead(leftSensePin));
+  Serial.print("topLeft(");
+  Serial.print(topLeftSensePin);  
+  Serial.print(")=");
+  Serial.println(digitalRead(topLeftSensePin));
+  Serial.print("right(");
+  Serial.print(rightSensePin);
+  Serial.print(")=");
+  Serial.println(digitalRead(rightSensePin));
+  Serial.print("tilt_1(");
+  Serial.print(tiltSensePin);  
+  Serial.print(")=");
+  Serial.println(digitalRead(tiltSensePin));
+  Serial.print("tilt_2(");
+  Serial.print(tiltSensePin2);  
+  Serial.print(")=");
+  Serial.println(digitalRead(tiltSensePin2));
+  Serial.print("leftBelt(");
+  Serial.print(leftBeltSensePin);  
+  Serial.print(")=");
+  Serial.println(digitalRead(leftBeltSensePin));
+  Serial.print("rightBelt(");
+  Serial.print(rightBeltSensePin);  
+  Serial.print(")=");  
+  Serial.println(digitalRead(rightBeltSensePin));
+  
+  Serial.println("===");
+  delay(1000);  
 }
 
 void TestSlowServoOpen() {
@@ -309,112 +297,4 @@ void TestBagDrops() {
     
     bag_count--;
   }  
-}
-
-void TestINA219() {
-  Serial.println("====Measuring voltage and current with INA219===");
-
-  float shuntvoltage = 0;
-  float busvoltage = 0;
-  float current_mA = 0;
-  float loadvoltage = 0;
-
-  shuntvoltage = ina219.getShuntVoltage_mV();
-  busvoltage = ina219.getBusVoltage_V();
-  current_mA = ina219.getCurrent_mA();
-  loadvoltage = busvoltage + (shuntvoltage / 1000);
-  
-  Serial.print("Bus Voltage:   "); Serial.print(busvoltage); Serial.println(" V");
-  Serial.print("Shunt Voltage: "); Serial.print(shuntvoltage); Serial.println(" mV");
-  Serial.print("Load Voltage:  "); Serial.print(loadvoltage); Serial.println(" V");
-  Serial.print("Current:       "); Serial.print(current_mA); Serial.println(" mA");
-  Serial.println("");
-
-  delay(2000);  
-}
-
-void TestSingleMotorTweener() {
-  Serial.println("====Testing single motor tweener===");
-  static int count = 0;
-  Serial.println(count);
-  SingleMotorTweener left_front(LEFT_FRONT), left_rear(LEFT_REAR), right_front(RIGHT_FRONT), right_rear(RIGHT_REAR); 
-   
-  switch(count) {
-    case 0:
-      left_front.setTargetSpeed(120);
-      left_front.update();
-      while(!Serial.available()) ; Serial.read();
-      left_front.setTargetSpeed(-120);
-      left_front.update();      
-      break;
-    case 1:
-      left_rear.setTargetSpeed(120);
-      left_rear.update();
-      while(!Serial.available()) ; Serial.read();
-      left_rear.setTargetSpeed(-120);
-      left_rear.update();
-      break;    
-    case 2:
-      right_front.setTargetSpeed(120);
-      right_front.update();
-      while(!Serial.available()) ; Serial.read();
-      right_front.setTargetSpeed(-120);
-      right_front.update();
-      break;  
-    case 3:
-      right_rear.setTargetSpeed(120);
-      right_rear.update();
-      while(!Serial.available()) ; Serial.read();
-      right_front.setTargetSpeed(-120);
-      right_front.update();
-      break;
-    case 4:
-      right_rear.setTargetSpeed(0);
-      left_front.setTargetSpeed(0);
-      left_rear.setTargetSpeed(0);
-      left_front.setTargetSpeed(0);
-      left_front.update();
-      break;  
-  }
-  count = (count + 1) % 5;
-  while(!Serial.available()) ; Serial.read();
-}
-
-void TestSwitchPins() {
-  /*for(int i = 0; i < 7; ++i) {
-    Serial.print(switchPins[i]);
-    Serial.print("=");
-    Serial.println(digitalRead(switchPins[i])); 
-  }*/
-  Serial.print("left(");
-  Serial.print(leftSensePin);  
-  Serial.print(")=");
-  Serial.println(digitalRead(leftSensePin));
-  Serial.print("start(");
-  Serial.print(startButton);  
-  Serial.print(")=");
-  Serial.println(digitalRead(startButton));
-  Serial.print("right(");
-  Serial.print(rightSensePin);
-  Serial.print(")=");
-  Serial.println(digitalRead(rightSensePin));
-  Serial.print("tilt_1(");
-  Serial.print(tiltSensePin);  
-  Serial.print(")=");
-  Serial.println(digitalRead(tiltSensePin));
-  Serial.print("tilt_2(");
-  Serial.print(tiltSensePin2);  
-  Serial.print(")=");
-  Serial.println(digitalRead(tiltSensePin2));
-  Serial.print("leftBelt(");
-  Serial.print(leftBeltSensePin);  
-  Serial.print(")=");
-  Serial.println(digitalRead(leftBeltSensePin));
-  Serial.print("rightBelt(");
-  Serial.print(rightBeltSensePin);  
-  Serial.print(")=");  
-  Serial.println(digitalRead(rightBeltSensePin));
-  
-  Serial.println("===");
-  delay(1000);  
 }
