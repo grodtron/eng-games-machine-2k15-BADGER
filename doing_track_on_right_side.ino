@@ -135,35 +135,11 @@ void waitingForFinalOrangeLine(){
   }
   
   if(left){
-    motors.setTargetSpeed(45, 40);
-        
-    /*right_front.setTargetSpeed(40);
-    right_rear.setTargetSpeed(40);    
-    left_rear.setTargetSpeed(45);
-    left_front.setTargetSpeed(45);*/
-    
+    motors.setTargetSpeed(45, 40);            
   }else{
-    /*
-    
-    FR:100
-    FL:80
-    RR:82
-    RL:32
-
-    right_front.setTargetSpeed(140);
-    left_front.setTargetSpeed(5);
-    right_rear.setTargetSpeed(110);    
-    left_rear.setTargetSpeed(5);
-    */    
-
     motors.setTargetSpeed(-60, 80);
   }
     
-/*  right_front.update();
-  left_front.update();
-  right_rear.update();    
-  left_rear.update();
-*/  
   motors.update();
 
   uint16_t r, g, b, c;
