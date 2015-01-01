@@ -68,7 +68,7 @@ void setup(){
   Serial.begin(9600);
 
   Serial.println("testing");
-
+  
   Wire.begin(BADGER_ADDRESS);
   Wire.onReceive(receiveEvent);
 
@@ -108,7 +108,6 @@ void setup(){
   digitalWrite(tiltSensePin, HIGH);
   digitalWrite(tiltSensePin2, HIGH);
 
-  currentState = waitingForBags;
 
   Serial.println("open all flaps");
   // open all flaps
@@ -129,11 +128,6 @@ void setup(){
     while (1);
   }
 
-#if RUN_TESTS  
-  runTests();
-  while(1);
-#endif
-
    // Blink color sensor LED
   for(int i = 0 ; i < 4; ++i) {
     servos.setPWM(15, 0, 0 );
@@ -141,6 +135,14 @@ void setup(){
     servos.setPWM(15, 0, 4095 );
     delay(150);
   }
+
+#if RUN_TESTS  
+  runTests();
+  while(1);
+#endif
+
+  currentState = goingDownRamp;
+
 }
 
 void loop(){

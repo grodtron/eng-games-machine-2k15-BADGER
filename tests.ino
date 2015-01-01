@@ -1,3 +1,5 @@
+#include "Statistic.h"
+
 const int switchPins[7] = {2, 3, 4, A0, A2, A3, 13};
 /* Switch pins
     4  = S1
@@ -18,8 +20,10 @@ front  -   back tower
 */
 
 void runTests() {
+while(1) {
   TestOpenServos();
   TestCloseServos();
+}
 //  TestBagPlacing();
 //  TestFullShootingBags();
 /*TestIRSensor();*/
@@ -27,14 +31,50 @@ void runTests() {
 //     TestShootingBags();
 //  TestTargetMovementCalculations();
 //  TestIRSensor();
-//  TestShootingBags();
+//while(1)  TestShootingBags();
 //  TestBeltLowering();
-//  TestMeasureShootingTime();
+// while(1)  TestMeasureShootingTime();
 //  while(1) TestSwitchPins();
 //while(1)  TestSlowServoOpen();
 //  TestI2CServo();
 //  TestBagDrops();
 //TestCollectBagAndShoot();
+// for(int i = 0; i < 6; ++i) TestMotorMovements();
+// for(int i = 0; i < 5; ++i) TestSingleMotorTweener();
+//while(1) TestOrangeLineTurn();
+//TestTargetMovementCalculations();
+}
+
+void TestTargetMovementCalculations() {
+  Statistic statsHole, statsWood, statsRunTime;
+  statsHole.clear(); statsWood.clear(); statsRunTime.clear();
+  int num_iterations = 100;
+  Serial.println("====Testing target time movement calculations====");
+  long initial_time, final_time, run_time;
+  for (int i = 0; i < num_iterations; ++i) {
+      Serial.println(i);
+      initial_time = millis();
+      calculatePeriod();
+      final_time = millis();
+      run_time = final_time - initial_time;
+      Serial.print("calculate period execution time: ");
+      Serial.println(run_time);
+      statsHole.add(holePeriod);
+      statsWood.add(woodPeriod);
+      statsRunTime.add(run_time);
+  }
+  Serial.println("=================================================");
+  Serial.print("average running time: "); Serial.println(statsRunTime.average());
+  Serial.print("Hole period: "); Serial.println(statsHole.average());
+  Serial.print("max: "); Serial.println(statsHole.maximum());
+  Serial.print("min: "); Serial.println(statsHole.minimum());
+  Serial.print("pop std: "); Serial.println(statsHole.pop_stdev());
+  Serial.print("unbiased std: "); Serial.println(statsHole.unbiased_stdev());
+  Serial.print("Wood period: "); Serial.println(statsWood.average());
+  Serial.print("max: "); Serial.println(statsWood.maximum());
+  Serial.print("min: "); Serial.println(statsWood.minimum());
+  Serial.print("pop std: "); Serial.println(statsWood.pop_stdev());
+  Serial.print("unbiased std: "); Serial.println(statsWood.unbiased_stdev());
 }
 
 void TestCollectBagAndShoot() {
@@ -63,26 +103,13 @@ void TestMeasureShootingTime() {
   while(!Serial.available()) ; Serial.read();  */
 }
 
-void TestTargetMovementCalculations() {
-  int num_iterations = 10;
-  Serial.println("====Testing target time movement calculations====");
-  long initial_time, final_time;
-  for (int i = 0; i < num_iterations; ++i) {
-      Serial.println(i);
-      initial_time = millis();
-      calculatePeriod();
-      final_time = millis();
-      Serial.print("calculate period execution time: ");
-      Serial.println(final_time - initial_time);
-  }
-}
-
 void TestShootingBags() {
   Serial.println("====Testing proper time shooting====");
-  while (holePeriod < 800 || holePeriod > 900 
-          || woodPeriod < 800 || woodPeriod > 900) {
+  holePeriod = 0;
+  woodPeriod = 0;
+  while (holePeriod < HOLE_MIN || holePeriod > HOLE_MAX 
+          || woodPeriod < WOOD_MIN || woodPeriod > WOOD_MAX)
       calculatePeriod();
-  }
   timeBagShooting();
   while(!Serial.available()) ; Serial.read();
 }
@@ -122,22 +149,22 @@ void TestOpenServos() {
   Serial.println("====Testing opening all servos====");
 
   for(int servoNum = 0; servoNum < 8; ++servoNum){
-    while(!Serial.available()) ; Serial.read(); 
+//    while(!Serial.available()) ; Serial.read(); 
     Serial.println(servoNum);
     // open each servo
     servos.setPWM(servoNum, 0, OPEN);
-    delay(500);
+    delay(250);
   }  
 }
 
 void TestCloseServos() {
   Serial.println("====Testing closing all servos====");
   for(int servoNum = 0; servoNum < 8; ++servoNum){
-    while(!Serial.available()) ; Serial.read(); 
+//    while(!Serial.available()) ; Serial.read(); 
     Serial.println(servoNum);
     // close each servo
     servos.setPWM(servoNum, 0, CLOSE);
-    delay(500);
+    delay(250);
   }    
 }
 
@@ -262,6 +289,41 @@ void TestI2CServo() {
   Serial.println("Got all bags, woohoo");
 }
 
+void TestMotorMovements() {
+  Serial.println("====Testing motor macros====");
+  static int count = 0;
+  Serial.println(count);
+  switch(count) {
+    case 0:
+      MOVE_SIDE_FWD(RIGHT, 255);
+      MOVE_SIDE_FWD(LEFT, 255);      
+      break;
+    case 1:
+      MOVE_SIDE_BAK(RIGHT, 255);
+      MOVE_SIDE_BAK(LEFT, 255);
+      break;    
+    case 2:
+      MOVE_SIDE_FWD(RIGHT, 128);
+      MOVE_SIDE_FWD(LEFT, 128);
+      break;  
+    case 3:
+      MOVE_SIDE_BAK(RIGHT, 128);
+      MOVE_SIDE_BAK(LEFT, 128);
+      break;
+    case 4:
+      MOVE_SIDE_FWD(RIGHT, 50);
+      while(!Serial.available()) ; Serial.read();        
+      MOVE_SIDE_FWD(LEFT, 50);
+      break;  
+    case 5:
+      MOVE_SIDE_FWD(RIGHT, 0);
+      MOVE_SIDE_FWD(LEFT, 0);
+      break;  
+  }
+  count = (count + 1) % 6;
+  while(!Serial.available()) ; Serial.read();
+}
+
 void TestBagDrops() {
   Serial.println("====Testing bag drops====");
    bag_count = 8;
@@ -297,4 +359,77 @@ void TestBagDrops() {
     
     bag_count--;
   }  
+}
+
+void TestSingleMotorTweener() {
+  Serial.println("====Testing single motor tweener===");
+  static int count = 0;
+  Serial.println(count);
+  SingleMotorTweener left_front(LEFT_FRONT), left_rear(LEFT_REAR), right_front(RIGHT_FRONT), right_rear(RIGHT_REAR); 
+   
+  switch(count) {
+    case 0:
+      left_front.setTargetSpeed(120);
+      left_front.update();
+      while(!Serial.available()) ; Serial.read();
+      left_front.setTargetSpeed(-120);
+      left_front.update();      
+      break;
+    case 1:
+      left_rear.setTargetSpeed(120);
+      left_rear.update();
+      while(!Serial.available()) ; Serial.read();
+      left_rear.setTargetSpeed(-120);
+      left_rear.update();
+      break;    
+    case 2:
+      right_front.setTargetSpeed(120);
+      right_front.update();
+      while(!Serial.available()) ; Serial.read();
+      right_front.setTargetSpeed(-120);
+      right_front.update();
+      break;  
+    case 3:
+      right_rear.setTargetSpeed(120);
+      right_rear.update();
+      while(!Serial.available()) ; Serial.read();
+      right_rear.setTargetSpeed(-120);
+      right_rear.update();
+      break;
+    case 4:
+      right_rear.setTargetSpeed(0);
+      left_front.setTargetSpeed(0);
+      left_rear.setTargetSpeed(0);
+      left_front.setTargetSpeed(0);
+      left_front.update();
+      break;  
+  }
+  count = (count + 1) % 5;
+  while(!Serial.available()) ; Serial.read();
+}
+
+void TestOrangeLineTurn() {
+  Serial.println("====Testing small radius turn===");
+  
+    right_front.setTargetSpeed(50);
+    left_front.setTargetSpeed(40);
+    right_rear.setTargetSpeed(41);    
+    left_rear.setTargetSpeed(16);
+  while(!Serial.available()) ; Serial.read();
+  right_front.update();
+  left_front.update();
+  right_rear.update();    
+  left_rear.update(); 
+   while(!Serial.available()) ; Serial.read();
+ 
+       right_rear.setTargetSpeed(0);
+      left_front.setTargetSpeed(0);
+      left_rear.setTargetSpeed(0);
+      right_front.setTargetSpeed(0);
+   while(!Serial.available()) ; Serial.read();
+      
+  right_front.update();
+  left_front.update();
+  right_rear.update();    
+  left_rear.update(); 
 }

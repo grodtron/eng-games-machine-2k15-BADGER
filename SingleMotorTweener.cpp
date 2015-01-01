@@ -25,28 +25,28 @@ void SingleMotorTweener::update(){
 
     switch(_wheel) {
       case RIGHT_FRONT:
-        if(target > 0){
+        if(current > 0){
           MOVE_WHEEL_FWD(RIGHT, FRONT, target);
         }else{
           MOVE_WHEEL_BAK(RIGHT, FRONT, target);
         }
         break;
       case RIGHT_REAR:
-        if(target > 0){
+        if(current > 0){
           MOVE_WHEEL_FWD(RIGHT, REAR, target);
         }else{
           MOVE_WHEEL_BAK(RIGHT, REAR, target);
         }
         break;        
       case LEFT_FRONT:
-        if(target > 0){
+        if(current > 0){
           MOVE_WHEEL_FWD(LEFT, FRONT, target);
         }else{
           MOVE_WHEEL_BAK(LEFT, FRONT, target);
         }
         break;      
       case LEFT_REAR:
-        if(target > 0){
+        if(current > 0){
           MOVE_WHEEL_FWD(LEFT, REAR, target);
         }else{
           MOVE_WHEEL_BAK(LEFT, REAR, target);

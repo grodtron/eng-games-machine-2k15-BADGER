@@ -1,3 +1,9 @@
+#define WOOD_MAX 902
+#define WOOD_MIN 842
+
+#define HOLE_MAX 878
+#define HOLE_MIN 782
+
 int holePeriod;
 int woodPeriod;
 unsigned long initialTime = 0;
@@ -7,8 +13,8 @@ const int ShootingSpeed = 1200; // Time to reach the target after turning motors
 void shootingTarget() {
   Serial.print("Bean bags left: ");
   Serial.println(bag_count);
-  while (holePeriod < 800 || holePeriod > 900 
-          || woodPeriod < 800 || woodPeriod > 900)
+  while (holePeriod < HOLE_MIN || holePeriod > HOLE_MAX 
+          || woodPeriod < WOOD_MIN || woodPeriod > WOOD_MAX)
       calculatePeriod();
  
   static int bottomServo; // Bottom servo that will release the bean bang
