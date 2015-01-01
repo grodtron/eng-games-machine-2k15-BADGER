@@ -1,14 +1,14 @@
-#define WOOD_MAX 902
-#define WOOD_MIN 842
+#define WOOD_MAX 1000
+#define WOOD_MIN 700
 
-#define HOLE_MAX 878
-#define HOLE_MIN 782
+#define HOLE_MAX 1000
+#define HOLE_MIN 700
 
 int holePeriod;
 int woodPeriod;
 unsigned long initialTime = 0;
 unsigned long finishTime = 0;
-const int ShootingSpeed = 1200; // Time to reach the target after turning motors on
+const int ShootingSpeed = 1175; // Time to reach the target after turning motors on
 
 void shootingTarget() {
   Serial.print("Bean bags left: ");
@@ -35,18 +35,15 @@ void shootingTarget() {
   // TODO: Find best time for these delays
   delay(500);   
   openNextFlap();
-  delay(250);
+  delay(500);
   
-  servos.setPWM(bottomServo, 0, OPEN); 
-  // TODO: Test slow servo opening
-  /*if(bottomServo == servoOrder[0]) {
-    for(int i = CLOSE; i >= OPEN; --i) {
-      servos.setPWM(servoOrder[0], 0, i); 
-      delay(2);    
-    }  
-  } else if (bottomServo == servoOrder[1]) {
-    servos.setPWM(bottomServo, 0, OPEN);  // seems to work better when this side opens fast
-  }*/
+  //servos.setPWM(bottomServo, 0, OPEN); 
+
+  for(int i = CLOSE; i >= OPEN; --i) {
+    servos.setPWM(bottomServo, 0, i); 
+    delay(2);    
+  }  
+
   timeBagShooting();
 
   bag_count--;
@@ -84,7 +81,7 @@ void calculatePeriod() {
                 holePeriod = finishTime-initialTime;
             }
 
-            if(woodPeriod > 50)
+            if(holePeriod > 50 && woodPeriod > 50)
                 break;
 
             initialTime = millis();
@@ -105,7 +102,7 @@ void calculatePeriod() {
                 woodPeriod = finishTime-initialTime;
             }
             
-            if(holePeriod > 50)
+            if(holePeriod > 50 && woodPeriod > 50)
                 break;
             
             initialTime = millis();

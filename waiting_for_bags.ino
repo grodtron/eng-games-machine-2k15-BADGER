@@ -51,6 +51,8 @@ void openNextFlap()
     bag_count = MAX_BAG_COUNT;
   }
   
+  if(servoOrder[total_bags - bag_count] == servoOrder[0] || servoOrder[total_bags - bag_count] == servoOrder[1]) return;
+  
   Serial.print("Opening servo ");
   Serial.println(servoOrder[total_bags - bag_count]);
   servos.setPWM(servoOrder[total_bags - bag_count], 0, OPEN);

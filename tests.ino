@@ -20,15 +20,15 @@ front  -   back tower
 */
 
 void runTests() {
-while(1) {
+/*while(1) {
   TestOpenServos();
   TestCloseServos();
-}
+}*/
 //  TestBagPlacing();
-//  TestFullShootingBags();
+  TestFullShootingBags();
 /*TestIRSensor();*/
 // for (int i=0; i < 30; ++i)
-//     TestShootingBags();
+//while(1) TestShootingBags();
 //  TestTargetMovementCalculations();
 //  TestIRSensor();
 //while(1)  TestShootingBags();
@@ -411,10 +411,10 @@ void TestSingleMotorTweener() {
 void TestOrangeLineTurn() {
   Serial.println("====Testing small radius turn===");
   
-    right_front.setTargetSpeed(50);
-    left_front.setTargetSpeed(40);
-    right_rear.setTargetSpeed(41);    
-    left_rear.setTargetSpeed(16);
+  right_front.setTargetSpeed(50);
+  left_front.setTargetSpeed(40);
+  right_rear.setTargetSpeed(41);    
+  left_rear.setTargetSpeed(16);
   while(!Serial.available()) ; Serial.read();
   right_front.update();
   left_front.update();
@@ -422,11 +422,11 @@ void TestOrangeLineTurn() {
   left_rear.update(); 
    while(!Serial.available()) ; Serial.read();
  
-       right_rear.setTargetSpeed(0);
-      left_front.setTargetSpeed(0);
-      left_rear.setTargetSpeed(0);
-      right_front.setTargetSpeed(0);
-   while(!Serial.available()) ; Serial.read();
+   right_rear.setTargetSpeed(0);
+  left_front.setTargetSpeed(0);
+  left_rear.setTargetSpeed(0);
+  right_front.setTargetSpeed(0);
+  while(!Serial.available()) ; Serial.read();
       
   right_front.update();
   left_front.update();
