@@ -1,5 +1,5 @@
 #include "Statistic.h"
-
+#if 0
 const int switchPins[7] = {2, 3, 4, A0, A2, A3, 13};
 /* Switch pins
     4  = S1
@@ -433,3 +433,4 @@ void TestOrangeLineTurn() {
   right_rear.update();    
   left_rear.update(); 
 }
+#endif
