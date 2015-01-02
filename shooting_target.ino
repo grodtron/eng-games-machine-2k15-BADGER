@@ -179,8 +179,23 @@ void lowerBelt() {
       MOVE_SIDE_BAK(LEFT, 40);
     Serial.println("left belt switch, going backward");
   }
+  unsigned long start_time = millis();
 
-  while(digitalRead(leftBeltSensePin) != 1 || digitalRead(rightBeltSensePin) != 1); // Go until both belt sensor pins are touched
+  while(digitalRead(leftBeltSensePin) != 1 || digitalRead(rightBeltSensePin) != 1) { // Go until both belt sensor pins are touched
+      if(digitalRead(rightBeltSensePin) != 1) {
+          MOVE_SIDE_FWD(RIGHT, 40);
+          MOVE_SIDE_FWD(LEFT,  40);
+          Serial.println("right belt switch, going forward");
+      }
+      if(digitalRead(leftBeltSensePin) != 1) {
+          MOVE_SIDE_BAK(RIGHT, 40);
+          MOVE_SIDE_BAK(LEFT, 40);
+          Serial.println("left belt switch, going backward");
+      }
+      if (millis()-start_time > 200)
+          break;
+  }
+
   MOVE_SIDE_FWD(RIGHT, 0);
   MOVE_SIDE_FWD(LEFT,  0);
   Serial.println("done");
@@ -192,9 +207,19 @@ void shake(int numShakes, int shakeDelay, int amount) {
     MOVE_SIDE_FWD(LEFT, amount);
     delay(shakeDelay);
     MOVE_SIDE_BAK(RIGHT, amount);
-    MOVE_SIDE_BAK(LEFT, amount); 
-    delay(shakeDelay); 
+    MOVE_SIDE_BAK(LEFT, amount);
+    delay(shakeDelay);
     MOVE_SIDE_FWD(RIGHT, 0);
-    MOVE_SIDE_FWD(LEFT, 0);    
-  }      
+    MOVE_SIDE_FWD(LEFT, 0);
+  }/*
+    for(int i = 0; i < numShakes; ++i) {
+        MOVE_SIDE_FWD(RIGHT, amount);
+        MOVE_SIDE_FWD(LEFT, amount/2);
+        delay(shakeDelay);
+        MOVE_SIDE_BAK(RIGHT, amount);
+        MOVE_SIDE_BAK(LEFT, amount/2);
+        delay(shakeDelay);
+        MOVE_SIDE_FWD(RIGHT, 0);
+        MOVE_SIDE_FWD(LEFT, 0);
+  }*/
 }

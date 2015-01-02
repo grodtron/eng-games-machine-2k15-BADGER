@@ -1,12 +1,5 @@
-/* TODO:  
-   
-* Need to fully test complete bag collection state and transition to start moving (includes i2c communication test)
-- Measure hole & wood period every shot, compare it to some expected value?
-      Figure out when is the best time to calculate it too
+/* TODO:
 - Need to find a way to measure accurately the shooting time of the target
-- Explore other motor speed for optimal trajectory (needs a better shooting success rate)
-x Opening servos slower when releasing flaps for shooting (TO BE TESTED)
-
 */
 #include <Adafruit_PWMServoDriver.h>
 #include <Adafruit_TCS34725.h>
@@ -31,7 +24,7 @@ const int leftSensePin = 2;
 const int startButton = 3;
 const int leftBeltSensePin = A0;
 const int rightBeltSensePin = A3;
-const int irSensorPin = A1;      
+const int irSensorPin = A1;
 
 Adafruit_PWMServoDriver servos = Adafruit_PWMServoDriver();
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_2_4MS, TCS34725_GAIN_1X);
@@ -41,27 +34,27 @@ Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_2_4MS, TCS347
 #define MAX_BAG_COUNT 8
 const int servoOrder[MAX_BAG_COUNT] = {1, 5, 0, 4, 3, 7, 2, 6}; // Order to close and open flaps, alternating each tower
 
-int pwmPins [N_MOTORS] = {9,  10, 11, 6};
+int pwmPins [N_MOTORS] = {9, 10, 11, 6};
 int digPins [N_MOTORS] = {12, 5, 8, 7};
-                
+
 int bag_count = 0;
 
 int total_bags = MAX_BAG_COUNT;
-boolean left, topLeft, right, tilt, tilt2, start, started = false;
+boolean left, topLeft, right, tilt, tilt2, start, batteryCharged = false;
 
 void (*currentState)();
 
 void softStarting();
-void onOffStyle(); // Race mode
+void onOffStyle(); // 0ace mode
 void doingTrackOnRightSide(); // Tower mode
 void error(int code);
 
-#define RUN_TESTS 1
+#define RUN_TESTS 0
 
 int freeRam () {
   extern int __heap_start, *__brkval; 
-  int v; 
-  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
+  int v;
+  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
 }
 
 void setup(){
@@ -99,18 +92,20 @@ void setup(){
   digitalWrite(tiltSensePin, HIGH);
   digitalWrite(tiltSensePin2, HIGH);
 
-  // open all flaps
+  // open all flaps 
+  /*
   for(int i = 2; i < MAX_BAG_COUNT; ++i) {
     servos.setPWM(servoOrder[i], 0, OPEN);
     delay(500);
   }
-
+  
   servos.setPWM(servoOrder[0], 0, CLOSE+50);
   delay(100);
   servos.setPWM(servoOrder[1], 0, CLOSE);
+  */
 
-//  placeBags();
-//  while(!digitalRead(startButton));
+  //placeBags();
+  //while(!digitalRead(startButton));
   if (tcs.begin()) {
     Serial.println("color, bags");
     currentState = waitingForBags;
@@ -129,18 +124,19 @@ void setup(){
 
 #if RUN_TESTS  
   runTests();
-  while(1);
+  while(1);/* {
+    while(!digitalRead(startButton));
+    lowerBelt();
+  }*/
 #endif
-//  bag_count = MAX_BAG_COUNT;
-  currentState = waitingForBags;
 
+  currentState = doingTrackOnRightSide;//waitingForBags;
   Serial.println("initialized");
-
   Serial.print("ram  "); Serial.println(freeRam());
-
   ina219.begin();
   Serial.print("vbat "); Serial.print(ina219.getBusVoltage_V());
-
+  bag_count = 8;
+  while(!digitalRead(startButton));
 }
 
 void loop(){

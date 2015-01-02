@@ -5,16 +5,19 @@ volatile int tower_to_close = 0;
 #define BATTERY_THRESHOLD 10.1
 
 void waitingForBags() {
-  if(start && !started && isBatteryReady() == true) { // check right switch?
+  if(!batteryCharged){
+    batteryCharged = isBatteryReady();
+  }
+  /*if(start && !started && isBatteryReady()) { // check right switch?
     started = true;
     total_bags = bag_count;
     for(int i = 2; i < MAX_BAG_COUNT; ++i){ // Close servos before we gtfo
       servos.setPWM(servoOrder[i], 0, CLOSE);
       delay(500);
-    }    
+    }
     currentState = doingTrackOnRightSide;  
-  }
-  
+  }*/
+  //if (digitalRead())
   if(received) {
     delay(250);
     closeNextFlap();
@@ -23,9 +26,14 @@ void waitingForBags() {
     Serial.print("Total bags: ");
     Serial.println(bag_count);
   }
-    
-  if (bag_count == 8) {
+  // start
+  if (start && batteryCharged) {
+     //while(!digitalRead(startButton));
      currentState = doingTrackOnRightSide;
+     /*for(int i = 2; i < MAX_BAG_COUNT; ++i){ // Close servos before we gtfo
+        servos.setPWM(servoOrder[i], 0, CLOSE);
+        delay(500);
+    }*/
      Serial.println("Got all bags dawg");
   }
 }
@@ -39,7 +47,7 @@ boolean isBatteryReady() {
   busvoltage = ina219.getBusVoltage_V();
   Serial.print("Bus Voltage:   "); Serial.print(busvoltage); Serial.println(" V");
   return (busvoltage > BATTERY_THRESHOLD);
-  
+
 }
 
 // Opens a flap in order

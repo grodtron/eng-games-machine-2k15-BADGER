@@ -31,7 +31,7 @@ void runTests() {
 //while(1) TestShootingBags();
 //  TestTargetMovementCalculations();
 //  TestIRSensor();
-//while(1)  TestShootingBags();
+while(1)  TestShootingBags();
 //  TestBeltLowering();
 // while(1)  TestMeasureShootingTime();
 //  while(1) TestSwitchPins();
@@ -43,7 +43,17 @@ void runTests() {
 // for(int i = 0; i < 5; ++i) TestSingleMotorTweener();
 //while(1) TestOrangeLineTurn();
 //TestTargetMovementCalculations();
-for(; ;) TestShakeBag();
+/*    for(int i = 0; i < 3; ++i) {
+        TestShakeBag();
+        delay(2000);
+    }*/
+/*  float busvoltage = 0;
+
+  busvoltage = ina219.getBusVoltage_V();
+  while(1) {
+      Serial.print("Bus Voltage:   "); Serial.print(busvoltage); Serial.println(" V");
+  }
+  */
 }
 
 void TestTargetMovementCalculations() {
@@ -198,7 +208,7 @@ void TestMotor() {
   while(!Serial.available()) ; Serial.read();
   
   ++i;
-  i = i % 4;  
+  i = i % 4;
 }
 
 void TestBeltLowering() {
@@ -436,10 +446,10 @@ void TestShakeBag() {
   Serial.println("Testing back n forth shake");
 
   const int numShakes = 5;
-  const int shakeDelay = 30;
-  const int shakeAmount = 50;
+  const int shakeDelay = 40;
+  const int shakeAmount = 70;
   shake(numShakes, shakeDelay, shakeAmount);
-  while(!digitalRead(startButton));
-  
+  //while(!digitalRead(startButton));
+
 }
 #endif

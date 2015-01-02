@@ -59,7 +59,7 @@ MotorTweener motors;
 void doingTrackOnRightSide(){
    
   static boolean tilting = false;
-  static int tiltStartTime = 0;
+  static unsigned long tiltStartTime = 0;
   
   if(right){
     motors.setTargetSpeed(20, 120);
@@ -73,8 +73,8 @@ void doingTrackOnRightSide(){
     if(! tilting){
       tiltStartTime = millis();
       tilting = true;
-    }else{
-      if( millis() - tiltStartTime > 300 ){
+    }else{      
+      if( (millis() - tiltStartTime) > 300 ){
         currentState = goingDownRamp;
       }    
     }
@@ -92,7 +92,7 @@ void stopEverything(){
 
 void goingDownRamp(){
   static boolean nonTilting = false;
-  static int nonTiltStartTime = 0;
+  static unsigned long nonTiltStartTime = 0;
   
   if( (!tilt) && (!tilt2) ){
     if(! nonTilting){
@@ -101,8 +101,7 @@ void goingDownRamp(){
     }else{
       if(millis() - nonTiltStartTime > 350){
         Serial.println("Waiting for orange line");
-        currentState = waitingForFinalOrangeLine
-        ;
+        currentState = waitingForFinalOrangeLine;
       }
     }
   }else{
@@ -139,12 +138,12 @@ void waitingForFinalOrangeLine(){
   }else{
     motors.setTargetSpeed(-60, 80);
   }
-    
+
   motors.update();
 
   uint16_t r, g, b, c;
   tcs.getRawData(&r, &g, &b, &c);
-  
+
   if( r > 8 ){
     MOVE_SIDE_FWD(RIGHT, 0);
     MOVE_SIDE_FWD(LEFT,  0);
@@ -155,7 +154,7 @@ void waitingForFinalOrangeLine(){
     // (stupid library!)
     tcs.getRawData(&r, &g, &b, &c);
     tcs.getRawData(&r, &g, &b, &c);
-    
+
     lowerBelt();
     currentState = shootingTarget;
     if(r > 90 && g > 35  ){ // remove this to speed things up?
