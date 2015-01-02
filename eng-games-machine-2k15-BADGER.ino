@@ -56,7 +56,7 @@ void onOffStyle(); // Race mode
 void doingTrackOnRightSide(); // Tower mode
 void error(int code);
 
-#define RUN_TESTS 0
+#define RUN_TESTS 1
 
 int freeRam () {
   extern int __heap_start, *__brkval; 

@@ -74,7 +74,7 @@ void doingTrackOnRightSide(){
       tiltStartTime = millis();
       tilting = true;
     }else{
-      if( millis() - tiltStartTime > 250 ){
+      if( millis() - tiltStartTime > 300 ){
         currentState = goingDownRamp;
       }    
     }
@@ -99,7 +99,7 @@ void goingDownRamp(){
       nonTilting = true;
       nonTiltStartTime = millis();
     }else{
-      if(millis() - nonTiltStartTime > 300){
+      if(millis() - nonTiltStartTime > 350){
         Serial.println("Waiting for orange line");
         currentState = waitingForFinalOrangeLine
         ;

@@ -13,11 +13,6 @@ const int ShootingSpeed = 1175; // Time to reach the target after turning motors
 void shootingTarget() {
   Serial.print("Bean bags left: ");
   Serial.println(bag_count);
-  holePeriod = 0;
-  woodPeriod = 0;
-  while (holePeriod < HOLE_MIN || holePeriod > HOLE_MAX 
-          || woodPeriod < WOOD_MIN || woodPeriod > WOOD_MAX)
-      calculatePeriod();
  
   static int bottomServo; // Bottom servo that will release the bean bang
 
@@ -52,6 +47,10 @@ void shootingTarget() {
   const int shakeAmount = 50;
   shake(numShakes, shakeDelay, shakeAmount);
 
+  do {
+    calculatePeriod();
+  } while (holePeriod < HOLE_MIN || holePeriod > HOLE_MAX 
+          || woodPeriod < WOOD_MIN || woodPeriod > WOOD_MAX);
   timeBagShooting();
 
   bag_count--;

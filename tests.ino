@@ -425,7 +425,7 @@ void TestOrangeLineTurn() {
   left_rear.setTargetSpeed(0);
   right_front.setTargetSpeed(0);
   while(!Serial.available()) ; Serial.read();
-      
+ 
   right_front.update();
   left_front.update();
   right_rear.update();    
