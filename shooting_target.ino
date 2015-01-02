@@ -13,6 +13,8 @@ const int ShootingSpeed = 1175; // Time to reach the target after turning motors
 void shootingTarget() {
   Serial.print("Bean bags left: ");
   Serial.println(bag_count);
+  holePeriod = 0;
+  woodPeriod = 0;
   while (holePeriod < HOLE_MIN || holePeriod > HOLE_MAX 
           || woodPeriod < WOOD_MIN || woodPeriod > WOOD_MAX)
       calculatePeriod();
@@ -42,7 +44,13 @@ void shootingTarget() {
   for(int i = CLOSE; i >= OPEN; --i) {
     servos.setPWM(bottomServo, 0, i); 
     delay(2);    
-  }  
+  }
+
+  // shake it off
+  const int numShakes = 10;
+  const int shakeDelay = 30;
+  const int shakeAmount = 50;
+  shake(numShakes, shakeDelay, shakeAmount);
 
   timeBagShooting();
 
@@ -177,4 +185,17 @@ void lowerBelt() {
   MOVE_SIDE_FWD(RIGHT, 0);
   MOVE_SIDE_FWD(LEFT,  0);
   Serial.println("done");
+}
+
+void shake(int numShakes, int shakeDelay, int amount) {
+  for(int i = 0; i < numShakes; ++i) {
+    MOVE_SIDE_FWD(RIGHT, amount);
+    MOVE_SIDE_FWD(LEFT, amount);
+    delay(shakeDelay);
+    MOVE_SIDE_BAK(RIGHT, amount);
+    MOVE_SIDE_BAK(LEFT, amount); 
+    delay(shakeDelay); 
+    MOVE_SIDE_FWD(RIGHT, 0);
+    MOVE_SIDE_FWD(LEFT, 0);    
+  }      
 }

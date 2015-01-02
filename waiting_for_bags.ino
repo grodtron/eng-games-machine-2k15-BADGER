@@ -1,6 +1,6 @@
 
 volatile boolean received = false; // flag set when loader arduino has sent a msg
-int tower_to_close = -1;
+volatile int tower_to_close = 0;
 
 #define BATTERY_THRESHOLD 10.1
 
@@ -56,8 +56,7 @@ void openNextFlap()
   Serial.print("Opening servo ");
   Serial.println(servoOrder[total_bags - bag_count]);
   servos.setPWM(servoOrder[total_bags - bag_count], 0, OPEN);
-  delay(500);
-  
+  delay(500);  
 }
 
 // Cycles through all flaps to close in order, closes 1 flap at a time
@@ -81,8 +80,15 @@ void closeNextFlap()
 void receiveEvent(int bytes)
 {
   received = true;
-  while(Wire.available())
-  {
+  while(Wire.available()) {
     tower_to_close = Wire.read();
   }  
+}
+
+void requestEvent() {
+  while(Wire.available()) {
+    Wire.read(); 
+  }
+
+  Wire.write(tower_to_close); 
 }

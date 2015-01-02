@@ -1,5 +1,5 @@
 #include "Statistic.h"
-#if 0
+#if RUN_TESTS
 const int switchPins[7] = {2, 3, 4, A0, A2, A3, 13};
 /* Switch pins
     4  = S1
@@ -25,7 +25,7 @@ void runTests() {
   TestCloseServos();
 }*/
 //  TestBagPlacing();
-  TestFullShootingBags();
+//  TestFullShootingBags();
 /*TestIRSensor();*/
 // for (int i=0; i < 30; ++i)
 //while(1) TestShootingBags();
@@ -43,13 +43,14 @@ void runTests() {
 // for(int i = 0; i < 5; ++i) TestSingleMotorTweener();
 //while(1) TestOrangeLineTurn();
 //TestTargetMovementCalculations();
+for(; ;) TestShakeBag();
 }
 
 void TestTargetMovementCalculations() {
   Statistic statsHole, statsWood, statsRunTime;
   statsHole.clear(); statsWood.clear(); statsRunTime.clear();
   int num_iterations = 100;
-  Serial.println("====Testing target time movement calculations====");
+  Serial.println("Testing target time movement calculations");
   long initial_time, final_time, run_time;
   for (int i = 0; i < num_iterations; ++i) {
       Serial.println(i);
@@ -90,7 +91,7 @@ bag_count = 0;
 
 void TestMeasureShootingTime() {
 
-  Serial.println("====Testing measuring shooting time====");
+  Serial.println("Testing measuring shooting time");
   shootBag();
   while(!Serial.available()) ; Serial.read();
 /*  unsigned long startTime = millis();
@@ -104,7 +105,7 @@ void TestMeasureShootingTime() {
 }
 
 void TestShootingBags() {
-  Serial.println("====Testing proper time shooting====");
+  Serial.println("Testing proper time shooting");
   holePeriod = 0;
   woodPeriod = 0;
   while (holePeriod < HOLE_MIN || holePeriod > HOLE_MAX 
@@ -115,7 +116,7 @@ void TestShootingBags() {
 }
 
 void TestBagPlacing() {
-  Serial.println("====Testing proper time shooting====");
+  Serial.println("Testing proper time shooting");
   bag_count = 0;
   // Place all bean bags  
   for(int servoNum = 2; servoNum < 8; ++servoNum){
@@ -126,7 +127,8 @@ void TestBagPlacing() {
   }
   
   for(int servoNum = 2; servoNum < 8; ++servoNum){
-    while(!Serial.available()) ; Serial.read(); 
+//    while(!Serial.available()) ; Serial.read(); 
+    while(!digitalRead(leftSensePin)); // TODO: start button in da future
     Serial.println(servoNum);
     // close each servo
     servos.setPWM(servoOrder[servoNum], 0, CLOSE);
@@ -136,7 +138,7 @@ void TestBagPlacing() {
 }
 
 void TestFullShootingBags() {
-  Serial.println("====Testing bag drop and shooting====");
+  Serial.println("Testing bag drop and shooting");
 
   bag_count = 8;
   
@@ -146,7 +148,7 @@ void TestFullShootingBags() {
 }
 
 void TestOpenServos() {
-  Serial.println("====Testing opening all servos====");
+  Serial.println("Testing opening all servos");
 
   for(int servoNum = 0; servoNum < 8; ++servoNum){
 //    while(!Serial.available()) ; Serial.read(); 
@@ -158,7 +160,7 @@ void TestOpenServos() {
 }
 
 void TestCloseServos() {
-  Serial.println("====Testing closing all servos====");
+  Serial.println("Testing closing all servos");
   for(int servoNum = 0; servoNum < 8; ++servoNum){
 //    while(!Serial.available()) ; Serial.read(); 
     Serial.println(servoNum);
@@ -169,14 +171,10 @@ void TestCloseServos() {
 }
 
 void TestIRSensor() {
-  Serial.println("====Testing IR sensor (period calculation)====");
+  Serial.println("Testing IR sensor (period calculation)");
 
   while(holePeriod == 0 || woodPeriod == 0) {
     calculatePeriod();
-  }
-
-  while(holePeriod == 0 || woodPeriod == 0) {
-    calculatePeriod();    
   }
 }
 
@@ -247,7 +245,7 @@ void TestSwitchPins() {
 }
 
 void TestSlowServoOpen() {
-  Serial.println("====Testing bottom servos slow open====");
+  Serial.println("Testing bottom servos slow open");
 
   servos.setPWM(servoOrder[0], 0, CLOSE+50); 
   delay(250);
@@ -269,7 +267,7 @@ void TestSlowServoOpen() {
 }
 
 void TestI2CServo() {
-  Serial.println("====Testing i2c and servo closing====");
+  Serial.println("Testing i2c and servo closing");
 
   bag_count = 0; 
   
@@ -290,7 +288,7 @@ void TestI2CServo() {
 }
 
 void TestMotorMovements() {
-  Serial.println("====Testing motor macros====");
+  Serial.println("Testing motor macros=");
   static int count = 0;
   Serial.println(count);
   switch(count) {
@@ -325,7 +323,7 @@ void TestMotorMovements() {
 }
 
 void TestBagDrops() {
-  Serial.println("====Testing bag drops====");
+  Serial.println("Testing bag drops");
    bag_count = 8;
    while(bag_count > 0) {
     Serial.print("Bean bags left: ");
@@ -362,7 +360,7 @@ void TestBagDrops() {
 }
 
 void TestSingleMotorTweener() {
-  Serial.println("====Testing single motor tweener===");
+  Serial.println("Testing single motor tweener");
   static int count = 0;
   Serial.println(count);
   SingleMotorTweener left_front(LEFT_FRONT), left_rear(LEFT_REAR), right_front(RIGHT_FRONT), right_rear(RIGHT_REAR); 
@@ -409,7 +407,7 @@ void TestSingleMotorTweener() {
 }
 
 void TestOrangeLineTurn() {
-  Serial.println("====Testing small radius turn===");
+  Serial.println("Testing small radius turn");
   
   right_front.setTargetSpeed(50);
   left_front.setTargetSpeed(40);
@@ -432,5 +430,16 @@ void TestOrangeLineTurn() {
   left_front.update();
   right_rear.update();    
   left_rear.update(); 
+}
+
+void TestShakeBag() {
+  Serial.println("Testing back n forth shake");
+
+  const int numShakes = 5;
+  const int shakeDelay = 30;
+  const int shakeAmount = 50;
+  shake(numShakes, shakeDelay, shakeAmount);
+  while(!digitalRead(startButton));
+  
 }
 #endif

@@ -31,7 +31,6 @@ const int leftSensePin = 2;
 const int startButton = 3;
 const int leftBeltSensePin = A0;
 const int rightBeltSensePin = A3;
-//const int targetPin = 3;
 const int irSensorPin = A1;      
 
 Adafruit_PWMServoDriver servos = Adafruit_PWMServoDriver();
@@ -70,6 +69,7 @@ void setup(){
   
   Wire.begin(BADGER_ADDRESS);
   Wire.onReceive(receiveEvent);
+  Wire.onRequest(requestEvent);
 
   servos.begin();
   servos.setPWMFreq(60);
@@ -109,6 +109,8 @@ void setup(){
   delay(100);
   servos.setPWM(servoOrder[1], 0, CLOSE);
 
+//  placeBags();
+//  while(!digitalRead(startButton));
   if (tcs.begin()) {
     Serial.println("color, bags");
     currentState = waitingForBags;
@@ -129,7 +131,7 @@ void setup(){
   runTests();
   while(1);
 #endif
- 
+//  bag_count = MAX_BAG_COUNT;
   currentState = waitingForBags;
 
   Serial.println("initialized");
@@ -190,4 +192,22 @@ void error(int code){
     //digitalWrite(ledPinC, (code >> 2) & 1);
     delay(1000);
   }
+}
+
+void placeBags() {
+  // Place all bean bags  
+  for(int servoNum = 2; servoNum < 8; ++servoNum){
+    Serial.println(servoNum);
+    // open each servo
+    servos.setPWM(servoOrder[servoNum], 0, OPEN);
+    delay(500);
+  }
+  
+  for(int servoNum = 2; servoNum < 8; ++servoNum){
+    while(!digitalRead(startButton));
+    Serial.println(servoNum);
+    // close each servo
+    servos.setPWM(servoOrder[servoNum], 0, CLOSE);
+    delay(500);
+  } 
 }
