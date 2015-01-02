@@ -35,6 +35,10 @@ void waitingForBags() {
         delay(500);
     }*/
      Serial.println("Got all bags dawg");
+  /*}else{
+    Serial.println("no:");
+    Serial.print("   st?: "); Serial.println(start);
+    Serial.print("   bat?: "); Serial.println(batteryCharged);    */
   }
 }
 

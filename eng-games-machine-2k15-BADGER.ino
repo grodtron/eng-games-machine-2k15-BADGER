@@ -65,6 +65,8 @@ void setup(){
   Wire.onRequest(requestEvent);
 
   servos.begin();
+  
+  Serial.println("test");
   servos.setPWMFreq(60);
 
   for(int i = 0; i < 10; ++i) {
@@ -101,7 +103,6 @@ void setup(){
   servos.setPWM(servoOrder[0], 0, CLOSE+50);
   delay(100);
   servos.setPWM(servoOrder[1], 0, CLOSE);
-  
 
   //placeBags();
   //while(!digitalRead(startButton));
