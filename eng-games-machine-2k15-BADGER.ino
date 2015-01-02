@@ -93,16 +93,15 @@ void setup(){
   digitalWrite(tiltSensePin2, HIGH);
 
   // open all flaps 
-  /*
   for(int i = 2; i < MAX_BAG_COUNT; ++i) {
     servos.setPWM(servoOrder[i], 0, OPEN);
     delay(500);
   }
-  
+
   servos.setPWM(servoOrder[0], 0, CLOSE+50);
   delay(100);
   servos.setPWM(servoOrder[1], 0, CLOSE);
-  */
+  
 
   //placeBags();
   //while(!digitalRead(startButton));
@@ -124,19 +123,14 @@ void setup(){
 
 #if RUN_TESTS  
   runTests();
-  while(1);/* {
-    while(!digitalRead(startButton));
-    lowerBelt();
-  }*/
+  while(1);
 #endif
 
-  currentState = doingTrackOnRightSide;//waitingForBags;
+  currentState = waitingForBags;
   Serial.println("initialized");
   Serial.print("ram  "); Serial.println(freeRam());
   ina219.begin();
   Serial.print("vbat "); Serial.print(ina219.getBusVoltage_V());
-  bag_count = 8;
-  while(!digitalRead(startButton));
 }
 
 void loop(){
