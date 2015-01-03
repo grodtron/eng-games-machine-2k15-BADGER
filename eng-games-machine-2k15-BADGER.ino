@@ -13,10 +13,6 @@ Adafruit_INA219 ina219(0x41);
 #define BADGER_ADDRESS 0x20
 #define LOADER_ADDRESS 0x21
 
-/*const int eStopPin = 7;
-const int leftMotorErrorPin = 1;
-const int rightMotorErrorPin = 0;*/
-
 const int tiltSensePin = 13;
 const int tiltSensePin2 = A2;
 const int rightSensePin = 4;
@@ -69,8 +65,11 @@ void setup(){
   Serial.println("test");
   servos.setPWMFreq(60);
 
-  for(int i = 0; i < 10; ++i) {
+  for(int i = 0; i < 5; ++i) {
     servos.setPWM(9, 0, 4095); // Belt motor off
+    servos.setPWM(11, 0, 4095);  
+    servos.setPWM(12, 0, 4095);      
+    servos.setPWM(13, 0, 4095);
   }
   
   for(int i = 0; i < N_MOTORS; ++i){
@@ -109,16 +108,27 @@ void setup(){
   if (tcs.begin()) {
     Serial.println("color, bags");
     currentState = waitingForBags;
-  } else if (digitalRead(leftSensePin)) {
+    for(int i = 0; i < 10; ++i) {
+      servos.setPWM(11, 0, 4095);  
+      servos.setPWM(12, 0, 0);      
+      servos.setPWM(13, 0, 0);  
+    }  
+  } else {
     Serial.println("nocolor, laps");
-    while (1);
+    for(int i = 0; i < 10; ++i) {
+      servos.setPWM(11, 0, 4095);  
+      servos.setPWM(12, 0, 4095);      
+      servos.setPWM(13, 0, 0);  
+    }      
+    currentState = softStarting;
+    while(!digitalRead(startButton) || !digitalRead(rightSensePin));
   }
 
   // Blink color sensor LED
   for(int i = 0 ; i < 4; ++i) {
     servos.setPWM(15, 0, 0 );
     delay(150);
-    servos.setPWM(15, 0, 4095 );
+    servos.setPWM(15, 0, 4095);
     delay(150);
   }
 
@@ -127,7 +137,6 @@ void setup(){
   while(1);
 #endif
 
-  currentState = waitingForBags;
   Serial.println("initialized");
   Serial.print("ram  "); Serial.println(freeRam());
   ina219.begin();
@@ -147,6 +156,7 @@ void loop(){
   }
 }
 
+unsigned long raceStartTime = 0;
 void softStarting(){
  
   static int count = 0;
@@ -156,7 +166,9 @@ void softStarting(){
     MOVE_SIDE_FWD(LEFT,  count);
     delay(1);
   }else{
-    currentState = onOffStyle;
+//    currentState = onOffStyle;
+    raceStartTime = millis();
+    currentState = startRaceOnRightSide;
   }
 }
 
@@ -164,7 +176,7 @@ void error(int code){
   MOVE_SIDE_FWD(RIGHT, 0);
   MOVE_SIDE_FWD(LEFT,  0);
 
-  Serial.print("ERROR: ");
+  Serial.print("ERROR: "); 
   Serial.println(code);
 
   while(1){

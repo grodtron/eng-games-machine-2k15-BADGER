@@ -74,7 +74,7 @@ void doingTrackOnRightSide(){
       tiltStartTime = millis();
       tilting = true;
     }else{      
-      if( (millis() - tiltStartTime) > 300 ){
+      if( (millis() - tiltStartTime) > 250 ){
         currentState = goingDownRamp;
       }    
     }
@@ -99,7 +99,7 @@ void goingDownRamp(){
       nonTilting = true;
       nonTiltStartTime = millis();
     }else{
-      if(millis() - nonTiltStartTime > 350){
+      if(millis() - nonTiltStartTime > 300){
         Serial.println("Waiting for orange line");
         currentState = waitingForFinalOrangeLine;
       }
@@ -117,7 +117,7 @@ void goingDownRamp(){
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-SingleMotorTweener left_front(LEFT_FRONT), left_rear(LEFT_REAR), right_front(RIGHT_FRONT), right_rear(RIGHT_REAR); 
+//SingleMotorTweener left_front(LEFT_FRONT), left_rear(LEFT_REAR), right_front(RIGHT_FRONT), right_rear(RIGHT_REAR); 
 
 void waitingForFinalOrangeLine(){
   

@@ -28,12 +28,12 @@ void waitingForBags() {
   }
   // start
   if (start && batteryCharged) {
-     //while(!digitalRead(startButton));
      currentState = doingTrackOnRightSide;
-     /*for(int i = 2; i < MAX_BAG_COUNT; ++i){ // Close servos before we gtfo
+     total_bags = bag_count;
+      for(int i = 2; i < MAX_BAG_COUNT; ++i){ // Close servos before we gtfo
         servos.setPWM(servoOrder[i], 0, CLOSE);
         delay(500);
-    }*/
+     }
      Serial.println("Got all bags dawg");
   /*}else{
     Serial.println("no:");

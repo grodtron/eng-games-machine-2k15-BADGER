@@ -31,10 +31,10 @@ void runTests() {
 //while(1) TestShootingBags();
 //  TestTargetMovementCalculations();
 //  TestIRSensor();
-while(1)  TestShootingBags();
+// while(1)  TestShootingBags();
 //  TestBeltLowering();
 // while(1)  TestMeasureShootingTime();
-//  while(1) TestSwitchPins();
+  while(1) TestSwitchPins();
 //while(1)  TestSlowServoOpen();
 //  TestI2CServo();
 //  TestBagDrops();
