@@ -58,8 +58,8 @@ MotorTweener motors;
 
 void doingTrackOnRightSide(){
    
-  static boolean tilting = false;
-  static unsigned long tiltStartTime = 0;
+  static boolean tilting = false, pressed = false;
+  static unsigned long tiltStartTime = 0, buttonStartTime = 0;
   
   if(right){
     motors.setTargetSpeed(20, 120);
@@ -91,15 +91,15 @@ void stopEverything(){
 }
 
 void goingDownRamp(){
-  static boolean nonTilting = false;
-  static unsigned long nonTiltStartTime = 0;
+  static boolean nonTilting = false, pressed = false;
+  static unsigned long nonTiltStartTime = 0, buttonStartTime = 0;
   
   if( (!tilt) && (!tilt2) ){
     if(! nonTilting){
       nonTilting = true;
       nonTiltStartTime = millis();
     }else{
-      if(millis() - nonTiltStartTime > 300){
+      if(millis() - nonTiltStartTime > 230){
         Serial.println("Waiting for orange line");
         currentState = waitingForFinalOrangeLine;
       }
@@ -107,12 +107,23 @@ void goingDownRamp(){
   }else{
     nonTilting = false;
     if(right){
-      motors.setTargetSpeed(25 , 30);
+      motors.setTargetSpeed(22 , 27);
     }else{
-      motors.setTargetSpeed(30, 25);
+      motors.setTargetSpeed(27, 22);
     }   
   }
   motors.update();
+  
+  /*if(start) {
+    if(! pressed){
+      buttonStartTime = millis();
+      pressed = true;
+    }else{      
+      if( (millis() - buttonStartTime) > 2000 ){
+        currentState = waitingForBags;
+      }    
+    }    
+  }*/  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////

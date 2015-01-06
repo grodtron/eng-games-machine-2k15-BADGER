@@ -21,6 +21,7 @@ void waitingForBags() {
   // start
   if (start && batteryCharged) {
      currentState = doingTrackOnRightSide;
+     bag_count = MAX_BAG_COUNT;
      total_bags = bag_count;
       for(int i = 2; i < MAX_BAG_COUNT; ++i){ // Close servos before we gtfo
         servos.setPWM(servoOrder[i], 0, CLOSE);
