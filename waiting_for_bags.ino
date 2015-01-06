@@ -2,22 +2,14 @@
 volatile boolean received = false; // flag set when loader arduino has sent a msg
 volatile int tower_to_close = 0;
 
-#define BATTERY_THRESHOLD 10.1
+#define BATTERY_THRESHOLD 10.8
 
 void waitingForBags() {
+
   if(!batteryCharged){
     batteryCharged = isBatteryReady();
   }
-  /*if(start && !started && isBatteryReady()) { // check right switch?
-    started = true;
-    total_bags = bag_count;
-    for(int i = 2; i < MAX_BAG_COUNT; ++i){ // Close servos before we gtfo
-      servos.setPWM(servoOrder[i], 0, CLOSE);
-      delay(500);
-    }
-    currentState = doingTrackOnRightSide;  
-  }*/
-  //if (digitalRead())
+
   if(received) {
     delay(250);
     closeNextFlap();
@@ -35,6 +27,12 @@ void waitingForBags() {
         delay(500);
      }
      Serial.println("Got all bags dawg");
+     MOVE_SIDE_FWD(LEFT, 120);
+     MOVE_SIDE_FWD(RIGHT, 120);
+     delay(300);
+     MOVE_SIDE_FWD(LEFT, 0);
+     MOVE_SIDE_FWD(RIGHT, 0);
+
   /*}else{
     Serial.println("no:");
     Serial.print("   st?: "); Serial.println(start);

@@ -74,7 +74,7 @@ void doingTrackOnRightSide(){
       tiltStartTime = millis();
       tilting = true;
     }else{      
-      if( (millis() - tiltStartTime) > 250 ){
+      if( (millis() - tiltStartTime) > 230 ){
         currentState = goingDownRamp;
       }    
     }

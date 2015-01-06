@@ -36,7 +36,7 @@ int digPins [N_MOTORS] = {12, 5, 8, 7};
 int bag_count = 0;
 
 int total_bags = MAX_BAG_COUNT;
-boolean left, topLeft, right, tilt, tilt2, start, batteryCharged = false;
+boolean left, right, tilt, tilt2, start, batteryCharged = false;
 
 void (*currentState)();
 
@@ -103,8 +103,6 @@ void setup(){
   delay(100);
   servos.setPWM(servoOrder[1], 0, CLOSE);
 
-  //placeBags();
-  //while(!digitalRead(startButton));
   if (tcs.begin()) {
     Serial.println("color, bags");
     currentState = waitingForBags;
@@ -112,7 +110,12 @@ void setup(){
       servos.setPWM(11, 0, 4095);  
       servos.setPWM(12, 0, 0);      
       servos.setPWM(13, 0, 0);  
-    }  
+    }
+    // below is for testing only
+    /* -placeBags();
+    bag_count = 8;  
+    currentState = doingTrackOnRightSide;
+    while(!digitalRead(startButton));*/  
   } else {
     Serial.println("nocolor, laps");
     for(int i = 0; i < 10; ++i) {
@@ -136,7 +139,6 @@ void setup(){
   runTests();
   while(1);
 #endif
-
   Serial.println("initialized");
   Serial.print("ram  "); Serial.println(freeRam());
   ina219.begin();
@@ -145,7 +147,6 @@ void setup(){
 
 void loop(){
   left  = digitalRead(leftSensePin);
-  topLeft = digitalRead(startButton);
   right = digitalRead(rightSensePin);
   tilt  = !digitalRead(tiltSensePin);  
   tilt2 = !digitalRead(tiltSensePin2);

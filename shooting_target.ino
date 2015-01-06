@@ -8,7 +8,7 @@ int holePeriod;
 int woodPeriod;
 unsigned long initialTime = 0;
 unsigned long finishTime = 0;
-const int ShootingSpeed = 1175; // Time to reach the target after turning motors on
+const int ShootingSpeed = 1155; // Time to reach the target after turning motors on
 
 void shootingTarget() {
   Serial.print("Bean bags left: ");
