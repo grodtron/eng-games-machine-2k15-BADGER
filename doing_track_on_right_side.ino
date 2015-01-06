@@ -81,6 +81,21 @@ void doingTrackOnRightSide(){
   }else{
     tilting = false;
   }
+  
+  if(start) {
+    if(! pressed){
+      buttonStartTime = millis();
+      pressed = true;
+    }else{      
+      if( (millis() - buttonStartTime) > 2000 ){
+        MOVE_SIDE_FWD(RIGHT, 0);
+        MOVE_SIDE_FWD(LEFT, 0);
+        currentState = waitingForBags;
+        pressed = false;
+        delay(5000);
+      }    
+    }    
+  }     
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,23 +122,28 @@ void goingDownRamp(){
   }else{
     nonTilting = false;
     if(right){
-      motors.setTargetSpeed(22 , 27);
+      motors.setTargetSpeed(20 , 25);
     }else{
-      motors.setTargetSpeed(27, 22);
+      motors.setTargetSpeed(25, 20);
     }   
   }
   motors.update();
   
-  /*if(start) {
+  if(start) {
     if(! pressed){
       buttonStartTime = millis();
       pressed = true;
     }else{      
       if( (millis() - buttonStartTime) > 2000 ){
+        MOVE_SIDE_FWD(RIGHT, 0);
+        MOVE_SIDE_FWD(LEFT, 0);
         currentState = waitingForBags;
+        pressed = false;
+        delay(5000);
+
       }    
     }    
-  }*/  
+  } 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132,7 +152,9 @@ void goingDownRamp(){
 
 void waitingForFinalOrangeLine(){
   
-  static boolean haveInitialized = false;
+  static boolean haveInitialized = false, pressed = false;
+  static unsigned long buttonStartTime = 0;
+
   if(!haveInitialized){
     haveInitialized = true;
     
@@ -179,6 +201,21 @@ void waitingForFinalOrangeLine(){
 //      }
     }
   }
+  if(start) {
+    if(! pressed){
+      buttonStartTime = millis();
+      pressed = true;
+    }else{      
+      if( (millis() - buttonStartTime) > 2000 ){
+        MOVE_SIDE_FWD(RIGHT, 0);
+        MOVE_SIDE_FWD(LEFT, 0);
+        currentState = waitingForBags;
+        pressed = false;
+        delay(5000);
+      }    
+    }    
+  }
+  
 }
 
 void overturnRecover() {
